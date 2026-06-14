@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CloudSec CLI Security Report</title>
+    <style>
+        {{STYLE}}
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <header>
+            <h1>🛡️ CloudSec CLI Security Report</h1>
+            <p>Linux • Cloud Security • Cost Monitoring</p>
+        </header>
+
+        <section class="card">
+            <h2>📌 System Information</h2>
+            <p><strong>Hostname:</strong> {{HOSTNAME}}</p>
+            <p><strong>User:</strong> {{USER}}</p>
+            <p><strong>Scan Time:</strong> {{SCAN_DATE}}</p>
+        </section>
+
+        <section class="card">
+            <h2>📊 Overall Risk Score</h2>
+            <p class="score {{OVERALL_COLOR}}">{{RISK_SCORE}} / 100</p>
+            <p class="status {{OVERALL_COLOR}}">{{OVERALL_STATUS}}</p>
+        </section>
+
+        <section class="card">
+            <h2>💻 System Health</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td>{{DISK_USAGE}}</td>
+                    <td class="{{DISK_COLOR}}">{{DISK_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>{{MEMORY_USAGE}}</td>
+                    <td class="{{MEMORY_COLOR}}">{{MEMORY_STATUS}}</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>🔐 Security Checks</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Open Ports</td>
+                    <td>{{OPEN_PORTS}}</td>
+                    <td class="{{PORT_COLOR}}">{{PORT_STATUS}}</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>🐳 Docker Status</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Docker Engine</td>
+                    <td>{{DOCKER_STATUS}}</td>
+                    <td class="{{DOCKER_COLOR}}">{{DOCKER_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>Running Containers</td>
+                    <td>{{DOCKER_CONTAINERS}}</td>
+                    <td class="green">INFO</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>☁️ AWS Up & Running Resources</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>AWS CLI</td>
+                    <td>{{AWS_STATUS}}</td>
+                    <td class="{{AWS_COLOR}}">{{AWS_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>AWS Account</td>
+                    <td>{{AWS_ACCOUNT}}</td>
+                    <td class="green">INFO</td>
+                </tr>
+                <tr>
+                    <td>Running EC2 Instances</td>
+                    <td>{{EC2_RUNNING}}</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+            </table>
+
+            <div class="aws-box">
+                <h3>EC2 Details</h3>
+                <p>{{EC2_DETAILS}}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💡 Recommendations</h2>
+            <ul>
+                <li>Close unnecessary open ports.</li>
+                <li>Monitor disk and memory usage regularly.</li>
+                <li>Stop unused AWS EC2 instances to avoid unexpected billing.</li>
+                <li>Keep Docker running only when required.</li>
+                <li>Run CloudSec CLI daily for better system visibility.</li>
+            </ul>
+        </section>
+
+    </div>
+</body>
+</html>
+
