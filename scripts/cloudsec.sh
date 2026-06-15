@@ -128,7 +128,7 @@ fi
 
 DISK_STATUS=$(get_status "$DISK_USAGE" 70 85)
 MEMORY_STATUS=$(get_status "$MEMORY_USAGE" 70 85)
-PORT_STATUS=$(get_status "$OPEN_PORTS" 10 20)
+PORT_STATUS=$(get_status "$OPEN_PORTS" 5 8)
 
 DISK_COLOR=$(get_color "$DISK_STATUS")
 MEMORY_COLOR=$(get_color "$MEMORY_STATUS")
@@ -176,7 +176,7 @@ else
     FAILED_LOGINS=0
 fi
 
-FAILED_LOGIN_STATUS=$(get_status "$FAILED_LOGINS" 5 15)
+FAILED_LOGIN_STATUS=$(get_status "$FAILED_LOGINS" 3 6)
 FAILED_LOGIN_COLOR=$(get_color "$FAILED_LOGIN_STATUS")
 
 if [ "$FAILED_LOGIN_STATUS" = "WARNING" ]; then
