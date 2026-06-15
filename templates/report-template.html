@@ -66,6 +66,43 @@
         </section>
 
         <section class="card">
+            <h2>🛡️ Linux Security Findings</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Severity / Status</th>
+                </tr>
+                <tr>
+                    <td>Failed Login Attempts</td>
+                    <td>{{FAILED_LOGINS}}</td>
+                    <td class="{{FAILED_LOGIN_COLOR}}">{{FAILED_LOGIN_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>Firewall</td>
+                    <td>{{FIREWALL_STATUS}}</td>
+                    <td class="{{FIREWALL_COLOR}}">{{FIREWALL_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>SSH Service</td>
+                    <td>{{SSH_STATUS}}</td>
+                    <td class="{{SSH_COLOR}}">{{SSH_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>Root SSH Login</td>
+                    <td>{{ROOT_LOGIN_STATUS}}</td>
+                    <td class="{{ROOT_LOGIN_COLOR}}">{{ROOT_LOGIN_STATUS}}</td>
+                </tr>
+                <tr>
+                    <td>Sudo/Admin Users</td>
+                    <td>{{SUDO_USERS}}</td>
+                    <td class="green">INFO</td>
+                </tr>
+            </table>
+        </section>
+        
+
+        <section class="card">
             <h2>🐳 Docker Status</h2>
             <table>
                 <tr>

@@ -163,6 +163,124 @@ echo "-------------------------------------------------"
 print_status "Open Ports   " "$OPEN_PORTS" "$PORT_STATUS"
 echo ""
 
+echo -e "${BLUE}${BOLD}Linux Security Checks${RESET}"
+echo "-------------------------------------------------"
+
+FAILED_LOGINS=0
+
+if [ -f /var/log/auth.log ]; then
+    FAILED_LOGINS=$(grep "Failed password" /var/log/auth.log 2>/dev/null | wc -l | tr -d ' ')
+elif [ -f /var/log/secure ]; then
+    FAILED_LOGINS=$(grep "Failed password" /var/log/secure 2>/dev/null | wc -l | tr -d ' ')
+else
+    FAILED_LOGINS=0
+fi
+
+FAILED_LOGIN_STATUS=$(get_status "$FAILED_LOGINS" 5 15)
+FAILED_LOGIN_COLOR=$(get_color "$FAILED_LOGIN_STATUS")
+
+if [ "$FAILED_LOGIN_STATUS" = "WARNING" ]; then
+    RISK_SCORE=$((RISK_SCORE + 10))
+elif [ "$FAILED_LOGIN_STATUS" = "CRITICAL" ]; then
+    RISK_SCORE=$((RISK_SCORE + 25))
+fi
+
+print_status "Failed Logins" "$FAILED_LOGINS" "$FAILED_LOGIN_STATUS"
+
+
+FIREWALL_STATUS="UNKNOWN"
+FIREWALL_COLOR="yellow"
+
+if command -v ufw >/dev/null 2>&1; then
+    if ufw status 2>/dev/null | grep -q "Status: active"; then
+        FIREWALL_STATUS="ENABLED"
+        FIREWALL_COLOR="green"
+    else
+        FIREWALL_STATUS="DISABLED"
+        FIREWALL_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 20))
+    fi
+elif command -v firewall-cmd >/dev/null 2>&1; then
+    if firewall-cmd --state 2>/dev/null | grep -q "running"; then
+        FIREWALL_STATUS="ENABLED"
+        FIREWALL_COLOR="green"
+    else
+        FIREWALL_STATUS="DISABLED"
+        FIREWALL_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 20))
+    fi
+elif /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate >/dev/null 2>&1; then
+    if /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -q "enabled"; then
+        FIREWALL_STATUS="ENABLED"
+        FIREWALL_COLOR="green"
+    else
+        FIREWALL_STATUS="DISABLED"
+        FIREWALL_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 20))
+    fi
+else
+    FIREWALL_STATUS="NOT FOUND"
+    FIREWALL_COLOR="yellow"
+    RISK_SCORE=$((RISK_SCORE + 5))
+fi
+
+if [ "$FIREWALL_COLOR" = "green" ]; then
+    echo -e "Firewall      : ${GREEN}${BOLD}$FIREWALL_STATUS ✅${RESET}"
+elif [ "$FIREWALL_COLOR" = "red" ]; then
+    echo -e "Firewall      : ${RED}${BOLD}${UNDERLINE}$FIREWALL_STATUS 🚨${RESET}"
+else
+    echo -e "Firewall      : ${YELLOW}${BOLD}$FIREWALL_STATUS ⚠️${RESET}"
+fi
+
+
+SSH_STATUS="NOT RUNNING"
+SSH_COLOR="green"
+
+if pgrep sshd >/dev/null 2>&1; then
+    SSH_STATUS="RUNNING"
+    SSH_COLOR="yellow"
+    RISK_SCORE=$((RISK_SCORE + 5))
+fi
+
+if [ "$SSH_COLOR" = "yellow" ]; then
+    echo -e "SSH Service   : ${YELLOW}${BOLD}$SSH_STATUS ⚠️${RESET}"
+else
+    echo -e "SSH Service   : ${GREEN}${BOLD}$SSH_STATUS ✅${RESET}"
+fi
+
+
+ROOT_LOGIN_STATUS="UNKNOWN"
+ROOT_LOGIN_COLOR="yellow"
+
+if [ -f /etc/ssh/sshd_config ]; then
+    if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
+        ROOT_LOGIN_STATUS="ENABLED"
+        ROOT_LOGIN_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 25))
+    else
+        ROOT_LOGIN_STATUS="DISABLED"
+        ROOT_LOGIN_COLOR="green"
+    fi
+fi
+
+if [ "$ROOT_LOGIN_COLOR" = "red" ]; then
+    echo -e "Root SSH Login: ${RED}${BOLD}${UNDERLINE}$ROOT_LOGIN_STATUS 🚨${RESET}"
+elif [ "$ROOT_LOGIN_COLOR" = "green" ]; then
+    echo -e "Root SSH Login: ${GREEN}${BOLD}$ROOT_LOGIN_STATUS ✅${RESET}"
+else
+    echo -e "Root SSH Login: ${YELLOW}${BOLD}$ROOT_LOGIN_STATUS ⚠️${RESET}"
+fi
+
+
+SUDO_USERS=$(grep -E 'sudo|wheel|admin' /etc/group 2>/dev/null | cut -d: -f4 | tr '\n' ' ')
+
+if [ -z "$SUDO_USERS" ]; then
+    SUDO_USERS="No sudo/admin group users found"
+fi
+
+echo "Sudo/Admin Users : $SUDO_USERS"
+echo ""
+
 DOCKER_STATUS="NOT INSTALLED"
 DOCKER_COLOR="yellow"
 DOCKER_CONTAINERS="0"
@@ -283,6 +401,16 @@ sed -i.bak \
     -e "s|{{AWS_ACCOUNT}}|$AWS_ACCOUNT|g" \
     -e "s|{{EC2_RUNNING}}|$EC2_RUNNING|g" \
     -e "s|{{EC2_DETAILS}}|$EC2_DETAILS|g" \
+    -e "s|{{FAILED_LOGINS}}|$FAILED_LOGINS|g" \
+    -e "s|{{FAILED_LOGIN_STATUS}}|$FAILED_LOGIN_STATUS|g" \
+    -e "s|{{FAILED_LOGIN_COLOR}}|$FAILED_LOGIN_COLOR|g" \
+    -e "s|{{FIREWALL_STATUS}}|$FIREWALL_STATUS|g" \
+    -e "s|{{FIREWALL_COLOR}}|$FIREWALL_COLOR|g" \
+    -e "s|{{SSH_STATUS}}|$SSH_STATUS|g" \
+    -e "s|{{SSH_COLOR}}|$SSH_COLOR|g" \
+    -e "s|{{ROOT_LOGIN_STATUS}}|$ROOT_LOGIN_STATUS|g" \
+    -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
+    -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
     "$HTML_REPORT"
 
 rm -f "$HTML_REPORT.bak"
