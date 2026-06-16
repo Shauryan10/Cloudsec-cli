@@ -417,10 +417,9 @@ echo ""
 
 cp "$TEMPLATE_FILE" "$HTML_REPORT"
 
-STYLE_CONTENT=$(cat "$CSS_FILE")
+
 
 sed -i.bak \
-    -e "s|{{STYLE}}|$STYLE_CONTENT|g" \
     -e "s|{{HOSTNAME}}|$HOSTNAME_VALUE|g" \
     -e "s|{{USER}}|$CURRENT_USER|g" \
     -e "s|{{SCAN_DATE}}|$SCAN_DATE|g" \
