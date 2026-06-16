@@ -125,11 +125,12 @@
 
         <section class="card">
             <h2>☁️ AWS Up & Running Resources</h2>
+        
             <table>
                 <tr>
-                    <th>Check</th>
-                    <th>Value</th>
-                    <th>Status</th>
+                    <th>Resource</th>
+                    <th>Count / Status</th>
+                    <th>Risk</th>
                 </tr>
                 <tr>
                     <td>AWS CLI</td>
@@ -146,11 +147,35 @@
                     <td>{{EC2_RUNNING}}</td>
                     <td class="yellow">COST CHECK</td>
                 </tr>
+                <tr>
+                    <td>RDS Instances</td>
+                    <td>{{RDS_RUNNING}}</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+                <tr>
+                    <td>Elastic IPs</td>
+                    <td>{{ELASTIC_IPS}}</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+                <tr>
+                    <td>NAT Gateways</td>
+                    <td>{{NAT_GATEWAYS}}</td>
+                    <td class="red">HIGH COST RISK</td>
+                </tr>
             </table>
-
+        
             <div class="aws-box">
                 <h3>EC2 Details</h3>
                 <p>{{EC2_DETAILS}}</p>
+        
+                <h3>RDS Details</h3>
+                <p>{{RDS_DETAILS}}</p>
+        
+                <h3>Elastic IP Details</h3>
+                <p>{{ELASTIC_IP_DETAILS}}</p>
+        
+                <h3>NAT Gateway Details</h3>
+                <p>{{NAT_GATEWAY_DETAILS}}</p>
             </div>
         </section>
 

@@ -310,8 +310,18 @@ echo ""
 AWS_STATUS="NOT CONFIGURED"
 AWS_COLOR="yellow"
 AWS_ACCOUNT="N/A"
+
 EC2_RUNNING="0"
 EC2_DETAILS="No running EC2 instances detected."
+
+RDS_RUNNING="0"
+RDS_DETAILS="No RDS instances detected."
+
+ELASTIC_IPS="0"
+ELASTIC_IP_DETAILS="No Elastic IPs detected."
+
+NAT_GATEWAYS="0"
+NAT_GATEWAY_DETAILS="No NAT Gateways detected."
 
 if command -v aws >/dev/null 2>&1; then
     AWS_IDENTITY=$(aws sts get-caller-identity --output text 2>/dev/null)
@@ -331,9 +341,39 @@ if command -v aws >/dev/null 2>&1; then
             EC2_DETAILS=$(echo "$EC2_DATA" | sed 's/$/<br>/')
             RISK_SCORE=$((RISK_SCORE + 15))
         fi
+
+        RDS_DATA=$(aws rds describe-db-instances \
+            --query "DBInstances[*].[DBInstanceIdentifier,DBInstanceClass,DBInstanceStatus]" \
+            --output text 2>/dev/null)
+
+        if [ -n "$RDS_DATA" ]; then
+            RDS_RUNNING=$(echo "$RDS_DATA" | wc -l | tr -d ' ')
+            RDS_DETAILS=$(echo "$RDS_DATA" | sed 's/$/<br>/')
+            RISK_SCORE=$((RISK_SCORE + 15))
+        fi
+
+        ELASTIC_IP_DATA=$(aws ec2 describe-addresses \
+            --query "Addresses[*].[PublicIp,AllocationId,AssociationId]" \
+            --output text 2>/dev/null)
+
+        if [ -n "$ELASTIC_IP_DATA" ]; then
+            ELASTIC_IPS=$(echo "$ELASTIC_IP_DATA" | wc -l | tr -d ' ')
+            ELASTIC_IP_DETAILS=$(echo "$ELASTIC_IP_DATA" | sed 's/$/<br>/')
+            RISK_SCORE=$((RISK_SCORE + 10))
+        fi
+
+        NAT_DATA=$(aws ec2 describe-nat-gateways \
+            --filter "Name=state,Values=available,pending" \
+            --query "NatGateways[*].[NatGatewayId,State,CreateTime]" \
+            --output text 2>/dev/null)
+
+        if [ -n "$NAT_DATA" ]; then
+            NAT_GATEWAYS=$(echo "$NAT_DATA" | wc -l | tr -d ' ')
+            NAT_GATEWAY_DETAILS=$(echo "$NAT_DATA" | sed 's/$/<br>/')
+            RISK_SCORE=$((RISK_SCORE + 25))
+        fi
     fi
 fi
-
 echo -e "${BLUE}${BOLD}AWS Cloud Status${RESET}"
 echo "-------------------------------------------------"
 if [ "$AWS_STATUS" = "CONNECTED" ]; then
@@ -343,6 +383,9 @@ else
 fi
 echo "Account       : $AWS_ACCOUNT"
 echo "EC2 Running   : $EC2_RUNNING"
+echo "RDS Running   : $RDS_RUNNING"
+echo "Elastic IPs   : $ELASTIC_IPS"
+echo "NAT Gateways  : $NAT_GATEWAYS"
 echo ""
 
 if [ "$RISK_SCORE" -lt 30 ]; then
@@ -401,6 +444,12 @@ sed -i.bak \
     -e "s|{{AWS_ACCOUNT}}|$AWS_ACCOUNT|g" \
     -e "s|{{EC2_RUNNING}}|$EC2_RUNNING|g" \
     -e "s|{{EC2_DETAILS}}|$EC2_DETAILS|g" \
+    -e "s|{{RDS_RUNNING}}|$RDS_RUNNING|g" \
+    -e "s|{{RDS_DETAILS}}|$RDS_DETAILS|g" \
+    -e "s|{{ELASTIC_IPS}}|$ELASTIC_IPS|g" \
+    -e "s|{{ELASTIC_IP_DETAILS}}|$ELASTIC_IP_DETAILS|g" \
+    -e "s|{{NAT_GATEWAYS}}|$NAT_GATEWAYS|g" \
+    -e "s|{{NAT_GATEWAY_DETAILS}}|$NAT_GATEWAY_DETAILS|g" \
     -e "s|{{FAILED_LOGINS}}|$FAILED_LOGINS|g" \
     -e "s|{{FAILED_LOGIN_STATUS}}|$FAILED_LOGIN_STATUS|g" \
     -e "s|{{FAILED_LOGIN_COLOR}}|$FAILED_LOGIN_COLOR|g" \
