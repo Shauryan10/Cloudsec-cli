@@ -101,24 +101,56 @@
         
 
         <section class="card">
-            <h2>🐳 Docker Status</h2>
+            <h2>🐳 Docker Security Audit</h2>
+        
             <table>
                 <tr>
                     <th>Check</th>
                     <th>Value</th>
-                    <th>Status</th>
+                    <th>Risk</th>
                 </tr>
+        
                 <tr>
                     <td>Docker Engine</td>
                     <td>{{DOCKER_STATUS}}</td>
                     <td class="{{DOCKER_COLOR}}">{{DOCKER_STATUS}}</td>
                 </tr>
+        
                 <tr>
                     <td>Running Containers</td>
                     <td>{{DOCKER_CONTAINERS}}</td>
                     <td class="green">INFO</td>
                 </tr>
+        
+                <tr>
+                    <td>Stopped Containers</td>
+                    <td>{{STOPPED_CONTAINERS}}</td>
+                    <td class="yellow">REVIEW</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Containers</td>
+                    <td>{{PRIVILEGED_CONTAINERS}}</td>
+                    <td class="red">CRITICAL</td>
+                </tr>
+        
+                <tr>
+                    <td>Root Containers</td>
+                    <td>{{ROOT_CONTAINERS}}</td>
+                    <td class="yellow">HIGH</td>
+                </tr>
+        
+                <tr>
+                    <td>Published Ports</td>
+                    <td>{{EXPOSED_PORTS}}</td>
+                    <td class="yellow">EXPOSURE CHECK</td>
+                </tr>
             </table>
+        
+            <div class="aws-box">
+                <h3>Docker Findings</h3>
+                <p>{{DOCKER_DETAILS}}</p>
+            </div>
         </section>
 
         <section class="card">

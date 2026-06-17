@@ -283,29 +283,99 @@ echo ""
 
 DOCKER_STATUS="NOT INSTALLED"
 DOCKER_COLOR="yellow"
+
 DOCKER_CONTAINERS="0"
+STOPPED_CONTAINERS="0"
+
+PRIVILEGED_CONTAINERS="0"
+ROOT_CONTAINERS="0"
+EXPOSED_PORTS="0"
+
+DOCKER_DETAILS="No Docker findings."
 
 if command -v docker >/dev/null 2>&1; then
+
     if docker info >/dev/null 2>&1; then
+
         DOCKER_STATUS="RUNNING"
         DOCKER_COLOR="green"
+
         DOCKER_CONTAINERS=$(docker ps -q | wc -l | tr -d ' ')
+        STOPPED_CONTAINERS=$(docker ps -aq -f status=exited | wc -l | tr -d ' ')
+
+        PRIVILEGED_DATA=$(docker ps -q | while read cid
+        do
+            docker inspect "$cid" \
+            --format '{{.Name}} {{.HostConfig.Privileged}}'
+        done 2>/dev/null | grep true)
+
+        if [ -n "$PRIVILEGED_DATA" ]; then
+            PRIVILEGED_CONTAINERS=$(echo "$PRIVILEGED_DATA" | wc -l | tr -d ' ')
+            RISK_SCORE=$((RISK_SCORE + 25))
+        fi
+
+        ROOT_DATA=$(docker ps -q | while read cid
+        do
+            docker exec "$cid" id -u 2>/dev/null
+        done | grep "^0$")
+
+        if [ -n "$ROOT_DATA" ]; then
+            ROOT_CONTAINERS=$(echo "$ROOT_DATA" | wc -l | tr -d ' ')
+            RISK_SCORE=$((RISK_SCORE + 15))
+        fi
+
+        EXPOSED_PORTS=$(docker ps \
+        --format "{{.Ports}}" \
+        | grep -oE "[0-9]+->" \
+        | wc -l \
+        | tr -d ' ')
+
+        if [ "$EXPOSED_PORTS" -gt 5 ]; then
+            RISK_SCORE=$((RISK_SCORE + 10))
+        fi
+
+        DOCKER_DETAILS=""
+
+        if [ "$PRIVILEGED_CONTAINERS" -gt 0 ]; then
+            DOCKER_DETAILS="${DOCKER_DETAILS}CRITICAL: Privileged containers detected.<br>"
+        fi
+
+        if [ "$ROOT_CONTAINERS" -gt 0 ]; then
+            DOCKER_DETAILS="${DOCKER_DETAILS}HIGH: Containers running as root.<br>"
+        fi
+
+        if [ "$EXPOSED_PORTS" -gt 5 ]; then
+            DOCKER_DETAILS="${DOCKER_DETAILS}WARNING: Large number of exposed ports.<br>"
+        fi
+
+        if [ -z "$DOCKER_DETAILS" ]; then
+            DOCKER_DETAILS="No Docker security findings."
+        fi
+
     else
         DOCKER_STATUS="INSTALLED BUT NOT RUNNING"
         DOCKER_COLOR="yellow"
         RISK_SCORE=$((RISK_SCORE + 5))
     fi
+
 fi
 
 echo -e "${BLUE}${BOLD}Docker Status${RESET}"
 echo "-------------------------------------------------"
+
 if [ "$DOCKER_STATUS" = "RUNNING" ]; then
     echo -e "Docker        : ${GREEN}${BOLD}$DOCKER_STATUS ✅${RESET}"
 else
     echo -e "Docker        : ${YELLOW}${BOLD}$DOCKER_STATUS ⚠️${RESET}"
 fi
-echo "Containers    : $DOCKER_CONTAINERS"
+
+echo "Running Containers   : $DOCKER_CONTAINERS"
+echo "Stopped Containers   : $STOPPED_CONTAINERS"
+echo "Privileged Containers: $PRIVILEGED_CONTAINERS"
+echo "Root Containers      : $ROOT_CONTAINERS"
+echo "Published Ports      : $EXPOSED_PORTS"
 echo ""
+
 
 AWS_STATUS="NOT CONFIGURED"
 AWS_COLOR="yellow"
@@ -438,6 +508,11 @@ sed -i.bak \
     -e "s|{{DOCKER_STATUS}}|$DOCKER_STATUS|g" \
     -e "s|{{DOCKER_COLOR}}|$DOCKER_COLOR|g" \
     -e "s|{{DOCKER_CONTAINERS}}|$DOCKER_CONTAINERS|g" \
+    -e "s|{{STOPPED_CONTAINERS}}|$STOPPED_CONTAINERS|g" \
+    -e "s|{{PRIVILEGED_CONTAINERS}}|$PRIVILEGED_CONTAINERS|g" \
+    -e "s|{{ROOT_CONTAINERS}}|$ROOT_CONTAINERS|g" \
+    -e "s|{{EXPOSED_PORTS}}|$EXPOSED_PORTS|g" \
+    -e "s|{{DOCKER_DETAILS}}|$DOCKER_DETAILS|g" \
     -e "s|{{AWS_STATUS}}|$AWS_STATUS|g" \
     -e "s|{{AWS_COLOR}}|$AWS_COLOR|g" \
     -e "s|{{AWS_ACCOUNT}}|$AWS_ACCOUNT|g" \
