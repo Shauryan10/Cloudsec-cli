@@ -163,6 +163,34 @@ echo "-------------------------------------------------"
 print_status "Open Ports   " "$OPEN_PORTS" "$PORT_STATUS"
 echo ""
 
+# Day 5 Security Checks
+
+WORLD_WRITABLE=$(find /tmp /var/tmp -type f -perm -0002 2>/dev/null | wc -l | tr -d ' ')
+WORLD_WRITABLE_STATUS=$(get_status "$WORLD_WRITABLE" 5 20)
+WORLD_WRITABLE_COLOR=$(get_color "$WORLD_WRITABLE_STATUS")
+
+PASSWORD_POLICY="UNKNOWN"
+if grep -q "^PASS_MAX_DAYS" /etc/login.defs 2>/dev/null; then
+    PASSWORD_POLICY="CONFIGURED"
+fi
+PASSWORD_POLICY_COLOR="green"
+
+INACTIVE_USERS=$(awk -F: '$7 ~ /(nologin|false)/ {count++} END {print count+0}' /etc/passwd)
+
+SSH_PASSWORD_AUTH="UNKNOWN"
+SSH_PASSWORD_COLOR="yellow"
+
+if [ -f /etc/ssh/sshd_config ]; then
+    if grep -q "^PasswordAuthentication no" /etc/ssh/sshd_config; then
+        SSH_PASSWORD_AUTH="DISABLED"
+        SSH_PASSWORD_COLOR="green"
+    else
+        SSH_PASSWORD_AUTH="ENABLED"
+        SSH_PASSWORD_COLOR="red"
+    fi
+fi
+
+
 echo -e "${BLUE}${BOLD}Linux Security Checks${RESET}"
 echo "-------------------------------------------------"
 
@@ -186,6 +214,12 @@ elif [ "$FAILED_LOGIN_STATUS" = "CRITICAL" ]; then
 fi
 
 print_status "Failed Logins" "$FAILED_LOGINS" "$FAILED_LOGIN_STATUS"
+
+echo "World Writable Files : $WORLD_WRITABLE ($WORLD_WRITABLE_STATUS)"
+echo "Password Policy      : $PASSWORD_POLICY"
+echo "Inactive Users       : $INACTIVE_USERS"
+echo "SSH Password Auth    : $SSH_PASSWORD_AUTH"
+echo ""
 
 
 FIREWALL_STATUS="UNKNOWN"
@@ -469,6 +503,62 @@ else
     OVERALL_COLOR="red"
 fi
 
+WORLD_WRITABLE=$(find /tmp /var/tmp -type f -perm -0002 2>/dev/null | wc -l | tr -d ' ')
+
+if [ "$WORLD_WRITABLE" -gt 10 ]; then
+    WORLD_WRITABLE_STATUS="CRITICAL"
+    WORLD_WRITABLE_COLOR="red"
+    RISK_SCORE=$((RISK_SCORE + 20))
+elif [ "$WORLD_WRITABLE" -gt 3 ]; then
+    WORLD_WRITABLE_STATUS="WARNING"
+    WORLD_WRITABLE_COLOR="yellow"
+    RISK_SCORE=$((RISK_SCORE + 10))
+else
+    WORLD_WRITABLE_STATUS="OK"
+    WORLD_WRITABLE_COLOR="green"
+fi
+
+PASSWORD_POLICY="UNKNOWN"
+PASSWORD_POLICY_COLOR="yellow"
+
+if [ -f /etc/login.defs ]; then
+
+    PASS_MAX=$(grep "^PASS_MAX_DAYS" /etc/login.defs | awk '{print $2}')
+
+    if [ -n "$PASS_MAX" ] && [ "$PASS_MAX" -le 90 ]; then
+        PASSWORD_POLICY="GOOD"
+        PASSWORD_POLICY_COLOR="green"
+    else
+        PASSWORD_POLICY="WEAK"
+        PASSWORD_POLICY_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 15))
+    fi
+fi
+
+INACTIVE_USERS=$(awk -F: '$7 ~ /(nologin|false)/ {count++} END {print count+0}' /etc/passwd)
+
+if [ "$INACTIVE_USERS" -gt 10 ]; then
+    RISK_SCORE=$((RISK_SCORE + 5))
+fi
+
+SSH_PASSWORD_AUTH="UNKNOWN"
+SSH_PASSWORD_COLOR="yellow"
+
+if [ -f /etc/ssh/sshd_config ]; then
+
+    if grep -q "^PasswordAuthentication yes" /etc/ssh/sshd_config; then
+        SSH_PASSWORD_AUTH="ENABLED"
+        SSH_PASSWORD_COLOR="red"
+        RISK_SCORE=$((RISK_SCORE + 20))
+    else
+        SSH_PASSWORD_AUTH="DISABLED"
+        SSH_PASSWORD_COLOR="green"
+    fi
+fi
+
+
+
+
 echo -e "${BLUE}${BOLD}Overall Result${RESET}"
 echo "-------------------------------------------------"
 
@@ -527,6 +617,14 @@ sed -i.bak \
     -e "s|{{FAILED_LOGINS}}|$FAILED_LOGINS|g" \
     -e "s|{{FAILED_LOGIN_STATUS}}|$FAILED_LOGIN_STATUS|g" \
     -e "s|{{FAILED_LOGIN_COLOR}}|$FAILED_LOGIN_COLOR|g" \
+    -e "s|{{WORLD_WRITABLE}}|$WORLD_WRITABLE|g" \
+    -e "s|{{WORLD_WRITABLE_STATUS}}|$WORLD_WRITABLE_STATUS|g" \
+    -e "s|{{WORLD_WRITABLE_COLOR}}|$WORLD_WRITABLE_COLOR|g" \
+    -e "s|{{PASSWORD_POLICY}}|$PASSWORD_POLICY|g" \
+    -e "s|{{PASSWORD_POLICY_COLOR}}|$PASSWORD_POLICY_COLOR|g" \
+    -e "s|{{INACTIVE_USERS}}|$INACTIVE_USERS|g" \
+    -e "s|{{SSH_PASSWORD_AUTH}}|$SSH_PASSWORD_AUTH|g" \
+    -e "s|{{SSH_PASSWORD_COLOR}}|$SSH_PASSWORD_COLOR|g" \
     -e "s|{{FIREWALL_STATUS}}|$FIREWALL_STATUS|g" \
     -e "s|{{FIREWALL_COLOR}}|$FIREWALL_COLOR|g" \
     -e "s|{{SSH_STATUS}}|$SSH_STATUS|g" \
