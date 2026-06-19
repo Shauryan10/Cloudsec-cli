@@ -103,6 +103,8 @@ SCAN_DATE=$(date)
 
 RISK_SCORE=0
 
+REMEDIATION_GUIDE=""
+
 echo -e "${BLUE}${BOLD}System Information${RESET}"
 echo "-------------------------------------------------"
 echo "Hostname      : $HOSTNAME_VALUE"
@@ -226,36 +228,84 @@ FIREWALL_STATUS="UNKNOWN"
 FIREWALL_COLOR="yellow"
 
 if command -v ufw >/dev/null 2>&1; then
+
     if ufw status 2>/dev/null | grep -q "Status: active"; then
+
         FIREWALL_STATUS="ENABLED"
         FIREWALL_COLOR="green"
+
     else
+
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+
+        REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+        <h3>🚨 Firewall Disabled</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Incoming connections are not filtered.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+sudo ufw enable
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+sudo ufw status
+        </pre>
+        <hr>"
+
     fi
+
 elif command -v firewall-cmd >/dev/null 2>&1; then
+
     if firewall-cmd --state 2>/dev/null | grep -q "running"; then
+
         FIREWALL_STATUS="ENABLED"
         FIREWALL_COLOR="green"
+
     else
+
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+
     fi
-elif /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate >/dev/null 2>&1; then
-    if /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -q "enabled"; then
+
+elif [ -x "/usr/libexec/ApplicationFirewall/socketfilterfw" ]; then
+
+    if /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -qi "enabled"; then
+
         FIREWALL_STATUS="ENABLED"
         FIREWALL_COLOR="green"
+
     else
+
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+
+        REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+        <h3>🚨 macOS Firewall Disabled</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Incoming connections are not filtered.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+        </pre>
+        <hr>"
+
     fi
+
 else
+
     FIREWALL_STATUS="NOT FOUND"
     FIREWALL_COLOR="yellow"
     RISK_SCORE=$((RISK_SCORE + 5))
+
 fi
 
 if [ "$FIREWALL_COLOR" = "green" ]; then
@@ -291,6 +341,23 @@ if [ -f /etc/ssh/sshd_config ]; then
         ROOT_LOGIN_STATUS="ENABLED"
         ROOT_LOGIN_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 25))
+        REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+        <h3>🚨 Root SSH Login Enabled</h3>
+        <p><b>Severity:</b> CRITICAL</p>
+        <p><b>Risk:</b> Attackers can directly brute-force the root account.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+        sudo nano /etc/ssh/sshd_config
+
+        PermitRootLogin no
+
+        sudo systemctl restart ssh
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+        grep PermitRootLogin /etc/ssh/sshd_config
+        </pre>
+        <hr>"
     else
         ROOT_LOGIN_STATUS="DISABLED"
         ROOT_LOGIN_COLOR="green"
@@ -509,6 +576,21 @@ if [ "$WORLD_WRITABLE" -gt 10 ]; then
     WORLD_WRITABLE_STATUS="CRITICAL"
     WORLD_WRITABLE_COLOR="red"
     RISK_SCORE=$((RISK_SCORE + 20))
+    REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+    <h3>⚠ Excessive World Writable Files</h3>
+    <p><b>Severity:</b> HIGH</p>
+    <p><b>Risk:</b> Any user can modify files and potentially escalate privileges.</p>
+    <p><b>Fix:</b></p>
+    <pre>
+    find /tmp /var/tmp -type f -perm -0002
+
+    chmod o-w filename
+    </pre>
+    <p><b>Verify:</b></p>
+    <pre>
+    ls -l filename
+    </pre>
+    <hr>"
 elif [ "$WORLD_WRITABLE" -gt 3 ]; then
     WORLD_WRITABLE_STATUS="WARNING"
     WORLD_WRITABLE_COLOR="yellow"
@@ -532,6 +614,23 @@ if [ -f /etc/login.defs ]; then
         PASSWORD_POLICY="WEAK"
         PASSWORD_POLICY_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 15))
+        REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+        <h3>⚠ Weak Password Policy</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Passwords may never expire.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+        sudo nano /etc/login.defs
+
+        PASS_MAX_DAYS 90
+        PASS_MIN_DAYS 1
+        PASS_WARN_AGE 7
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+        grep PASS_MAX_DAYS /etc/login.defs
+        </pre>
+        <hr>"
     fi
 fi
 
@@ -550,6 +649,25 @@ if [ -f /etc/ssh/sshd_config ]; then
         SSH_PASSWORD_AUTH="ENABLED"
         SSH_PASSWORD_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+        REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+        <h3>⚠ SSH Password Authentication Enabled</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Vulnerable to password brute-force attacks.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+        ssh-keygen -t ed25519
+
+        sudo nano /etc/ssh/sshd_config
+
+        PasswordAuthentication no
+
+        sudo systemctl restart ssh
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+        grep PasswordAuthentication /etc/ssh/sshd_config
+        </pre>
+        <hr>"
     else
         SSH_PASSWORD_AUTH="DISABLED"
         SSH_PASSWORD_COLOR="green"
@@ -574,6 +692,10 @@ else
 fi
 
 echo ""
+
+echo "============== DEBUG =============="
+echo "$REMEDIATION_GUIDE"
+echo "==================================="
 
 cp "$TEMPLATE_FILE" "$HTML_REPORT"
 
@@ -633,6 +755,19 @@ sed -i.bak \
     -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
     -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
     "$HTML_REPORT"
+    REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
+
+export REMEDIATION_ESCAPED
+
+perl -0777 -i -pe '
+BEGIN {
+    $r = $ENV{"REMEDIATION_ESCAPED"};
+    $r =~ s/\\n/\n/g;
+}
+s/\{\{REMEDIATION_GUIDE\}\}/$r/g;
+' "$HTML_REPORT"
+
+
 
 rm -f "$HTML_REPORT.bak"
 
