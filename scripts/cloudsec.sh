@@ -795,9 +795,9 @@ echo "Compliance Grade : $COMPLIANCE_GRADE"
 
 echo ""
 
-echo "============== DEBUG =============="
-echo "$REMEDIATION_GUIDE"
-echo "==================================="
+#echo "============== DEBUG =============="
+#echo "$REMEDIATION_GUIDE"
+#echo "==================================="
 
 cp "$TEMPLATE_FILE" "$HTML_REPORT"
 
