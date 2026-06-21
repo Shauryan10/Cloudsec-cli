@@ -105,6 +105,9 @@ RISK_SCORE=0
 
 REMEDIATION_GUIDE=""
 
+COMPLIANCE_SCORE=0
+COMPLIANCE_TOTAL=7
+
 echo -e "${BLUE}${BOLD}System Information${RESET}"
 echo "-------------------------------------------------"
 echo "Hostname      : $HOSTNAME_VALUE"
@@ -127,6 +130,8 @@ elif command -v lsof >/dev/null 2>&1; then
 else
     OPEN_PORTS=0
 fi
+
+
 
 DISK_STATUS=$(get_status "$DISK_USAGE" 70 85)
 MEMORY_STATUS=$(get_status "$MEMORY_USAGE" 70 85)
@@ -192,6 +197,13 @@ if [ -f /etc/ssh/sshd_config ]; then
     fi
 fi
 
+if [ "$SSH_PASSWORD_AUTH" = "DISABLED" ]; then
+    SSH_PASSWORD_COMPLIANCE="PASS"
+    COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+else
+    SSH_PASSWORD_COMPLIANCE="FAIL"
+fi
+
 
 echo -e "${BLUE}${BOLD}Linux Security Checks${RESET}"
 echo "-------------------------------------------------"
@@ -222,6 +234,13 @@ echo "Password Policy      : $PASSWORD_POLICY"
 echo "Inactive Users       : $INACTIVE_USERS"
 echo "SSH Password Auth    : $SSH_PASSWORD_AUTH"
 echo ""
+
+if [ "$WORLD_WRITABLE" -le 3 ]; then
+    WORLD_WRITABLE_COMPLIANCE="PASS"
+    COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+else
+    WORLD_WRITABLE_COMPLIANCE="FAIL"
+fi
 
 
 FIREWALL_STATUS="UNKNOWN"
@@ -308,6 +327,13 @@ else
 
 fi
 
+if [ "$FIREWALL_STATUS" = "ENABLED" ]; then
+    FIREWALL_COMPLIANCE="PASS"
+    COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+else
+    FIREWALL_COMPLIANCE="FAIL"
+fi
+
 if [ "$FIREWALL_COLOR" = "green" ]; then
     echo -e "Firewall      : ${GREEN}${BOLD}$FIREWALL_STATUS ✅${RESET}"
 elif [ "$FIREWALL_COLOR" = "red" ]; then
@@ -362,6 +388,13 @@ if [ -f /etc/ssh/sshd_config ]; then
         ROOT_LOGIN_STATUS="DISABLED"
         ROOT_LOGIN_COLOR="green"
     fi
+fi
+
+if [ "$ROOT_LOGIN_STATUS" = "DISABLED" ]; then
+    ROOT_COMPLIANCE="PASS"
+    COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+else
+    ROOT_COMPLIANCE="FAIL"
 fi
 
 if [ "$ROOT_LOGIN_COLOR" = "red" ]; then
@@ -470,6 +503,14 @@ else
     echo -e "Docker        : ${YELLOW}${BOLD}$DOCKER_STATUS ⚠️${RESET}"
 fi
 
+if [ "$PRIVILEGED_CONTAINERS" = "0" ]; then
+    DOCKER_COMPLIANCE="PASS"
+    COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+else
+    DOCKER_COMPLIANCE="FAIL"
+fi
+
+
 echo "Running Containers   : $DOCKER_CONTAINERS"
 echo "Stopped Containers   : $STOPPED_CONTAINERS"
 echo "Privileged Containers: $PRIVILEGED_CONTAINERS"
@@ -559,16 +600,48 @@ echo "Elastic IPs   : $ELASTIC_IPS"
 echo "NAT Gateways  : $NAT_GATEWAYS"
 echo ""
 
-if [ "$RISK_SCORE" -lt 30 ]; then
-    OVERALL_STATUS="LOW RISK"
-    OVERALL_COLOR="green"
-elif [ "$RISK_SCORE" -lt 60 ]; then
-    OVERALL_STATUS="MEDIUM RISK"
-    OVERALL_COLOR="yellow"
-else
-    OVERALL_STATUS="HIGH RISK"
-    OVERALL_COLOR="red"
+
+
+K8S_STATUS="NOT INSTALLED"
+K8S_COLOR="yellow"
+
+RUNNING_PODS=0
+ROOT_PODS=0
+PRIVILEGED_PODS=0
+EXPOSED_SERVICES=0
+
+K8S_DETAILS="No Kubernetes findings."
+
+if command -v kubectl >/dev/null 2>&1; then
+
+    if kubectl cluster-info >/dev/null 2>&1; then
+
+        K8S_STATUS="CONNECTED"
+        K8S_COLOR="green"
+
+        RUNNING_PODS=$(kubectl get pods -A --no-headers 2>/dev/null | wc -l | tr -d ' ')
+        PRIVILEGED_PODS=$(kubectl get pods -A -o jsonpath='{range .items[*]}{.spec.containers[*].securityContext.privileged}{"\n"}{end}' 2>/dev/null | grep true | wc -l | tr -d ' ')
+
+        if [ "$PRIVILEGED_PODS" = "0" ]; then
+              K8S_COMPLIANCE="PASS"
+              COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
+        else
+           K8S_COMPLIANCE="FAIL"
+        fi
+
+    fi
+
 fi
+
+echo -e "${BLUE}${BOLD}Kubernetes Status${RESET}"
+echo "-------------------------------------------------"
+
+echo "Cluster Status : $K8S_STATUS"
+echo "Running Pods   : $RUNNING_PODS"
+echo "Privileged Pods: $PRIVILEGED_PODS"
+echo ""
+
+
 
 WORLD_WRITABLE=$(find /tmp /var/tmp -type f -perm -0002 2>/dev/null | wc -l | tr -d ' ')
 
@@ -610,9 +683,12 @@ if [ -f /etc/login.defs ]; then
     if [ -n "$PASS_MAX" ] && [ "$PASS_MAX" -le 90 ]; then
         PASSWORD_POLICY="GOOD"
         PASSWORD_POLICY_COLOR="green"
+        PASSWORD_POLICY_COMPLIANCE="PASS"
+        COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
     else
         PASSWORD_POLICY="WEAK"
         PASSWORD_POLICY_COLOR="red"
+        PASSWORD_POLICY_COMPLIANCE="FAIL"
         RISK_SCORE=$((RISK_SCORE + 15))
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>⚠ Weak Password Policy</h3>
@@ -674,7 +750,30 @@ if [ -f /etc/ssh/sshd_config ]; then
     fi
 fi
 
+COMPLIANCE_PERCENT=$((COMPLIANCE_SCORE * 100 / COMPLIANCE_TOTAL))
 
+if [ "$COMPLIANCE_PERCENT" -ge 90 ]; then
+    COMPLIANCE_GRADE="A"
+elif [ "$COMPLIANCE_PERCENT" -ge 75 ]; then
+    COMPLIANCE_GRADE="B"
+elif [ "$COMPLIANCE_PERCENT" -ge 60 ]; then
+    COMPLIANCE_GRADE="C"
+else
+    COMPLIANCE_GRADE="F"
+fi
+
+# ===== FINAL OVERALL RISK CALCULATION =====
+
+if [ "$RISK_SCORE" -lt 30 ]; then
+    OVERALL_STATUS="LOW RISK"
+    OVERALL_COLOR="green"
+elif [ "$RISK_SCORE" -lt 60 ]; then
+    OVERALL_STATUS="MEDIUM RISK"
+    OVERALL_COLOR="yellow"
+else
+    OVERALL_STATUS="HIGH RISK"
+    OVERALL_COLOR="red"
+fi
 
 
 echo -e "${BLUE}${BOLD}Overall Result${RESET}"
@@ -691,6 +790,9 @@ else
     echo -e "Status        : ${RED}${BOLD}${UNDERLINE}$OVERALL_STATUS${RESET}"
 fi
 
+echo "Compliance     : $COMPLIANCE_SCORE/$COMPLIANCE_TOTAL ($COMPLIANCE_PERCENT%)"
+echo "Compliance Grade : $COMPLIANCE_GRADE"
+
 echo ""
 
 echo "============== DEBUG =============="
@@ -706,6 +808,9 @@ sed -i.bak \
     -e "s|{{USER}}|$CURRENT_USER|g" \
     -e "s|{{SCAN_DATE}}|$SCAN_DATE|g" \
     -e "s|{{RISK_SCORE}}|$RISK_SCORE|g" \
+    -e "s|{{COMPLIANCE_SCORE}}|$COMPLIANCE_SCORE|g" \
+    -e "s|{{COMPLIANCE_TOTAL}}|$COMPLIANCE_TOTAL|g" \
+    -e "s|{{COMPLIANCE_PERCENT}}|$COMPLIANCE_PERCENT|g" \
     -e "s|{{OVERALL_STATUS}}|$OVERALL_STATUS|g" \
     -e "s|{{OVERALL_COLOR}}|$OVERALL_COLOR|g" \
     -e "s|{{DISK_USAGE}}|$DISK_USAGE%|g" \
@@ -754,6 +859,7 @@ sed -i.bak \
     -e "s|{{ROOT_LOGIN_STATUS}}|$ROOT_LOGIN_STATUS|g" \
     -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
     -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
+    -e "s|{{COMPLIANCE_GRADE}}|$COMPLIANCE_GRADE|g" \
     "$HTML_REPORT"
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
 

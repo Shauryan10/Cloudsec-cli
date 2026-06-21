@@ -21,9 +21,64 @@
         </section>
 
         <section class="card">
-            <h2>📊 Overall Risk Score</h2>
-            <p class="score {{OVERALL_COLOR}}">{{RISK_SCORE}} / 100</p>
-            <p class="status {{OVERALL_COLOR}}">{{OVERALL_STATUS}}</p>
+            <h2>📊 Security Summary</h2>
+        
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+        
+                <tr>
+                    <td>Risk Score</td>
+                    <td>{{RISK_SCORE}} / 100</td>
+                </tr>
+        
+                <tr>
+                    <td>Risk Level</td>
+                    <td class="{{OVERALL_COLOR}}">
+                        {{OVERALL_STATUS}}
+                    </td>
+                </tr>
+        
+                <tr>
+                    <td>Compliance</td>
+                    <td>{{COMPLIANCE_PERCENT}}%</td>
+                </tr>
+        
+                <tr>
+                    <td>Grade</td>
+                    <td>{{COMPLIANCE_GRADE}}</td>
+                </tr>
+            </table>
+        </section>
+
+
+        <section class="card">
+            <h2>✅ Compliance Dashboard</h2>
+        
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Checks Passed</td>
+                    <td>{{COMPLIANCE_SCORE}} / {{COMPLIANCE_TOTAL}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Percentage</td>
+                    <td>{{COMPLIANCE_PERCENT}}%</td>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Grade</td>
+                    <td>{{COMPLIANCE_GRADE}}</td>
+                </tr>
+        
+            </table>
         </section>
 
         <section class="card">
@@ -85,11 +140,6 @@
                     <td>SSH Service</td>
                     <td>{{SSH_STATUS}}</td>
                     <td class="{{SSH_COLOR}}">{{SSH_STATUS}}</td>
-                </tr>
-                <tr>
-                    <td>Root SSH Login</td>
-                    <td>{{ROOT_LOGIN_STATUS}}</td>
-                    <td class="{{ROOT_LOGIN_COLOR}}">{{ROOT_LOGIN_STATUS}}</td>
                 </tr>
                 <tr>
                     <td>Root SSH Login</td>
@@ -244,6 +294,85 @@
                 <h3>NAT Gateway Details</h3>
                 <p>{{NAT_GATEWAY_DETAILS}}</p>
             </div>
+        </section>
+
+        <section class="card">
+            <h2>☸️ Kubernetes Security Audit</h2>
+        
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                </tr>
+        
+                <tr>
+                    <td>Cluster Status</td>
+                    <td>{{K8S_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Running Pods</td>
+                    <td>{{RUNNING_PODS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Pods</td>
+                    <td>{{PRIVILEGED_PODS}}</td>
+                </tr>
+        
+            </table>
+        </section>
+
+        
+        <section class="card">
+            <h2>📈 Risk Calculation Breakdown</h2>
+        
+            <table>
+                <tr>
+                    <th>Security Check</th>
+                    <th>Status</th>
+                </tr>
+        
+                <tr>
+                    <td>Disk Usage</td>
+                    <td>{{DISK_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>{{MEMORY_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Open Ports</td>
+                    <td>{{PORT_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Failed Logins</td>
+                    <td>{{FAILED_LOGIN_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Firewall</td>
+                    <td>{{FIREWALL_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Root SSH Login</td>
+                    <td>{{ROOT_LOGIN_STATUS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Containers</td>
+                    <td>{{PRIVILEGED_CONTAINERS}}</td>
+                </tr>
+        
+                <tr>
+                    <td>NAT Gateways</td>
+                    <td>{{NAT_GATEWAYS}}</td>
+                </tr>
+            </table>
         </section>
 
         <section class="card">
