@@ -841,6 +841,9 @@ sed -i.bak \
     -e "s|{{ELASTIC_IP_DETAILS}}|$ELASTIC_IP_DETAILS|g" \
     -e "s|{{NAT_GATEWAYS}}|$NAT_GATEWAYS|g" \
     -e "s|{{NAT_GATEWAY_DETAILS}}|$NAT_GATEWAY_DETAILS|g" \
+    -e "s|{{K8S_STATUS}}|$K8S_STATUS|g" \
+    -e "s|{{RUNNING_PODS}}|$RUNNING_PODS|g" \
+    -e "s|{{PRIVILEGED_PODS}}|$PRIVILEGED_PODS|g" \
     -e "s|{{FAILED_LOGINS}}|$FAILED_LOGINS|g" \
     -e "s|{{FAILED_LOGIN_STATUS}}|$FAILED_LOGIN_STATUS|g" \
     -e "s|{{FAILED_LOGIN_COLOR}}|$FAILED_LOGIN_COLOR|g" \
