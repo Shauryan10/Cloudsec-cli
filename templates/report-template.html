@@ -319,11 +319,50 @@
                     <td>Privileged Pods</td>
                     <td>{{PRIVILEGED_PODS}}</td>
                 </tr>
+                <tr>
+                    <td>Findings</td>
+                    <td>{{K8S_DETAILS}}</td>
+                </tr>
         
             </table>
         </section>
 
+        <section class="card">
+            <h2>📊 Risk Distribution</h2>
         
+            <table>
+                <tr>
+                    <th>Area</th>
+                    <th>Risk Points</th>
+                </tr>
+        
+                <tr>
+                    <td>System Health</td>
+                    <td>{{SYSTEM_RISK}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Linux Security</td>
+                    <td>{{LINUX_RISK}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Docker Security</td>
+                    <td>{{DOCKER_RISK}}</td>
+                </tr>
+        
+                <tr>
+                    <td>AWS Security</td>
+                    <td>{{AWS_RISK}}</td>
+                </tr>
+        
+                <tr>
+                    <td>Kubernetes Security</td>
+                    <td>{{K8S_RISK}}</td>
+                </tr>
+            </table>
+        </section>
+
         <section class="card">
             <h2>📈 Risk Calculation Breakdown</h2>
         

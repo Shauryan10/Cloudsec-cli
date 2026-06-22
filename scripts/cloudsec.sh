@@ -106,6 +106,7 @@ SYSTEM_RISK=0
 LINUX_RISK=0
 DOCKER_RISK=0
 AWS_RISK=0
+K8S_RISK=0
 
 REMEDIATION_GUIDE=""
 
@@ -231,8 +232,10 @@ FAILED_LOGIN_COLOR=$(get_color "$FAILED_LOGIN_STATUS")
 
 if [ "$FAILED_LOGIN_STATUS" = "WARNING" ]; then
     RISK_SCORE=$((RISK_SCORE + 10))
+    LINUX_RISK=$((LINUX_RISK + 10))
 elif [ "$FAILED_LOGIN_STATUS" = "CRITICAL" ]; then
     RISK_SCORE=$((RISK_SCORE + 25))
+    LINUX_RISK=$((LINUX_RISK + 25))
 fi
 
 print_status "Failed Logins" "$FAILED_LOGINS" "$FAILED_LOGIN_STATUS"
@@ -296,6 +299,7 @@ elif command -v firewall-cmd >/dev/null 2>&1; then
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+        LINUX_RISK=$((LINUX_RISK + 20))
 
     fi
 
@@ -311,6 +315,7 @@ elif [ -x "/usr/libexec/ApplicationFirewall/socketfilterfw" ]; then
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+        LINUX_RISK=$((LINUX_RISK + 20))
 
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>🚨 macOS Firewall Disabled</h3>
@@ -333,6 +338,7 @@ else
     FIREWALL_STATUS="NOT FOUND"
     FIREWALL_COLOR="yellow"
     RISK_SCORE=$((RISK_SCORE + 5))
+    LINUX_RISK=$((LINUX_RISK + 5))
 
 fi
 
@@ -359,6 +365,7 @@ if pgrep sshd >/dev/null 2>&1; then
     SSH_STATUS="RUNNING"
     SSH_COLOR="yellow"
     RISK_SCORE=$((RISK_SCORE + 5))
+    LINUX_RISK=$((LINUX_RISK + 5))
 fi
 
 if [ "$SSH_COLOR" = "yellow" ]; then
@@ -447,7 +454,7 @@ if command -v docker >/dev/null 2>&1; then
         DOCKER_CONTAINERS=$(docker ps -q | wc -l | tr -d ' ')
         STOPPED_CONTAINERS=$(docker ps -aq -f status=exited | wc -l | tr -d ' ')
 
-        PRIVILEGED_DATA=$(docker ps -q | while read cid
+        PRIVILEGED_DATA=$(docker ps -q | while read -r cid
         do
             docker inspect "$cid" \
             --format '{{.Name}} {{.HostConfig.Privileged}}'
@@ -459,7 +466,7 @@ if command -v docker >/dev/null 2>&1; then
             DOCKER_RISK=$((DOCKER_RISK + 25))
         fi
 
-        ROOT_DATA=$(docker ps -q | while read cid
+        ROOT_DATA=$(docker ps -q | while read -r cid
         do
             docker exec "$cid" id -u 2>/dev/null
         done | grep "^0$")
@@ -503,6 +510,7 @@ if command -v docker >/dev/null 2>&1; then
         DOCKER_STATUS="INSTALLED BUT NOT RUNNING"
         DOCKER_COLOR="yellow"
         RISK_SCORE=$((RISK_SCORE + 5))
+        DOCKER_RISK=$((DOCKER_RISK + 5))
     fi
 
 fi
@@ -644,6 +652,8 @@ if command -v kubectl >/dev/null 2>&1; then
               COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
         else
            K8S_COMPLIANCE="FAIL"
+           RISK_SCORE=$((RISK_SCORE + 20))
+           K8S_RISK=$((K8S_RISK + 20))
         fi
 
     fi
@@ -686,6 +696,7 @@ elif [ "$WORLD_WRITABLE" -gt 3 ]; then
     WORLD_WRITABLE_STATUS="WARNING"
     WORLD_WRITABLE_COLOR="yellow"
     RISK_SCORE=$((RISK_SCORE + 10))
+    LINUX_RISK=$((LINUX_RISK + 10))
 else
     WORLD_WRITABLE_STATUS="OK"
     WORLD_WRITABLE_COLOR="green"
@@ -708,6 +719,7 @@ if [ -f /etc/login.defs ]; then
         PASSWORD_POLICY_COLOR="red"
         PASSWORD_POLICY_COMPLIANCE="FAIL"
         RISK_SCORE=$((RISK_SCORE + 15))
+        LINUX_RISK=$((LINUX_RISK + 15))
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>⚠ Weak Password Policy</h3>
         <p><b>Severity:</b> HIGH</p>
@@ -732,6 +744,7 @@ INACTIVE_USERS=$(awk -F: '$7 ~ /(nologin|false)/ {count++} END {print count+0}' 
 
 if [ "$INACTIVE_USERS" -gt 10 ]; then
     RISK_SCORE=$((RISK_SCORE + 5))
+    LINUX_RISK=$((LINUX_RISK + 5))
 fi
 
 SSH_PASSWORD_AUTH="UNKNOWN"
@@ -743,6 +756,7 @@ if [ -f /etc/ssh/sshd_config ]; then
         SSH_PASSWORD_AUTH="ENABLED"
         SSH_PASSWORD_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+        LINUX_RISK=$((LINUX_RISK + 20))
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>⚠ SSH Password Authentication Enabled</h3>
         <p><b>Severity:</b> HIGH</p>
@@ -885,6 +899,7 @@ sed -i.bak \
     -e "s|{{LINUX_RISK}}|$LINUX_RISK|g" \
     -e "s|{{DOCKER_RISK}}|$DOCKER_RISK|g" \
     -e "s|{{AWS_RISK}}|$AWS_RISK|g" \
+    -e "s|{{K8S_RISK}}|$AWS_RISK|g" \
     "$HTML_REPORT"
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
 
