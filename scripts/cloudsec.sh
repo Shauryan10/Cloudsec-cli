@@ -102,6 +102,10 @@ CURRENT_USER=$(whoami)
 SCAN_DATE=$(date)
 
 RISK_SCORE=0
+SYSTEM_RISK=0
+LINUX_RISK=0
+DOCKER_RISK=0
+AWS_RISK=0
 
 REMEDIATION_GUIDE=""
 
@@ -145,18 +149,22 @@ if [ "$DISK_STATUS" = "WARNING" ]; then
     RISK_SCORE=$((RISK_SCORE + 10))
 elif [ "$DISK_STATUS" = "CRITICAL" ]; then
     RISK_SCORE=$((RISK_SCORE + 25))
+    SYSTEM_RISK=$((SYSTEM_RISK + 25))
 fi
 
 if [ "$MEMORY_STATUS" = "WARNING" ]; then
     RISK_SCORE=$((RISK_SCORE + 10))
 elif [ "$MEMORY_STATUS" = "CRITICAL" ]; then
     RISK_SCORE=$((RISK_SCORE + 25))
+    SYSTEM_RISK=$((SYSTEM_RISK + 25))
+
 fi
 
 if [ "$PORT_STATUS" = "WARNING" ]; then
     RISK_SCORE=$((RISK_SCORE + 10))
 elif [ "$PORT_STATUS" = "CRITICAL" ]; then
     RISK_SCORE=$((RISK_SCORE + 20))
+    SYSTEM_RISK=$((SYSTEM_RISK + 20))
 fi
 
 echo -e "${BLUE}${BOLD}System Health${RESET}"
@@ -258,6 +266,7 @@ if command -v ufw >/dev/null 2>&1; then
         FIREWALL_STATUS="DISABLED"
         FIREWALL_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 20))
+        LINUX_RISK=$((LINUX_RISK + 20))
 
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>🚨 Firewall Disabled</h3>
@@ -367,6 +376,7 @@ if [ -f /etc/ssh/sshd_config ]; then
         ROOT_LOGIN_STATUS="ENABLED"
         ROOT_LOGIN_COLOR="red"
         RISK_SCORE=$((RISK_SCORE + 25))
+        LINUX_RISK=$((LINUX_RISK + 25))
         REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
         <h3>🚨 Root SSH Login Enabled</h3>
         <p><b>Severity:</b> CRITICAL</p>
@@ -446,6 +456,7 @@ if command -v docker >/dev/null 2>&1; then
         if [ -n "$PRIVILEGED_DATA" ]; then
             PRIVILEGED_CONTAINERS=$(echo "$PRIVILEGED_DATA" | wc -l | tr -d ' ')
             RISK_SCORE=$((RISK_SCORE + 25))
+            DOCKER_RISK=$((DOCKER_RISK + 25))
         fi
 
         ROOT_DATA=$(docker ps -q | while read cid
@@ -456,6 +467,7 @@ if command -v docker >/dev/null 2>&1; then
         if [ -n "$ROOT_DATA" ]; then
             ROOT_CONTAINERS=$(echo "$ROOT_DATA" | wc -l | tr -d ' ')
             RISK_SCORE=$((RISK_SCORE + 15))
+            DOCKER_RISK=$((DOCKER_RISK +15))
         fi
 
         EXPOSED_PORTS=$(docker ps \
@@ -466,6 +478,7 @@ if command -v docker >/dev/null 2>&1; then
 
         if [ "$EXPOSED_PORTS" -gt 5 ]; then
             RISK_SCORE=$((RISK_SCORE + 10))
+            DOCKER_RISK=$((DOCKER_RISK +10))
         fi
 
         DOCKER_DETAILS=""
@@ -552,6 +565,7 @@ if command -v aws >/dev/null 2>&1; then
             EC2_RUNNING=$(echo "$EC2_DATA" | wc -l | tr -d ' ')
             EC2_DETAILS=$(echo "$EC2_DATA" | sed 's/$/<br>/')
             RISK_SCORE=$((RISK_SCORE + 15))
+            AWS_RISK=$((AWS_RISK + 15))
         fi
 
         RDS_DATA=$(aws rds describe-db-instances \
@@ -562,6 +576,7 @@ if command -v aws >/dev/null 2>&1; then
             RDS_RUNNING=$(echo "$RDS_DATA" | wc -l | tr -d ' ')
             RDS_DETAILS=$(echo "$RDS_DATA" | sed 's/$/<br>/')
             RISK_SCORE=$((RISK_SCORE + 15))
+            AWS_RISK=$((AWS_RISK + 15))
         fi
 
         ELASTIC_IP_DATA=$(aws ec2 describe-addresses \
@@ -572,6 +587,7 @@ if command -v aws >/dev/null 2>&1; then
             ELASTIC_IPS=$(echo "$ELASTIC_IP_DATA" | wc -l | tr -d ' ')
             ELASTIC_IP_DETAILS=$(echo "$ELASTIC_IP_DATA" | sed 's/$/<br>/')
             RISK_SCORE=$((RISK_SCORE + 10))
+            AWS_RISK=$((AWS_RISK + 10))
         fi
 
         NAT_DATA=$(aws ec2 describe-nat-gateways \
@@ -583,6 +599,7 @@ if command -v aws >/dev/null 2>&1; then
             NAT_GATEWAYS=$(echo "$NAT_DATA" | wc -l | tr -d ' ')
             NAT_GATEWAY_DETAILS=$(echo "$NAT_DATA" | sed 's/$/<br>/')
             RISK_SCORE=$((RISK_SCORE + 25))
+            AWS_RISK=$((AWS_RISK + 25))
         fi
     fi
 fi
@@ -649,6 +666,7 @@ if [ "$WORLD_WRITABLE" -gt 10 ]; then
     WORLD_WRITABLE_STATUS="CRITICAL"
     WORLD_WRITABLE_COLOR="red"
     RISK_SCORE=$((RISK_SCORE + 20))
+    LINUX_RISK=$((LINUX_RISK + 20))
     REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
     <h3>⚠ Excessive World Writable Files</h3>
     <p><b>Severity:</b> HIGH</p>
@@ -863,6 +881,10 @@ sed -i.bak \
     -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
     -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
     -e "s|{{COMPLIANCE_GRADE}}|$COMPLIANCE_GRADE|g" \
+    -e "s|{{SYSTEM_RISK}}|$SYSTEM_RISK|g" \
+    -e "s|{{LINUX_RISK}}|$LINUX_RISK|g" \
+    -e "s|{{DOCKER_RISK}}|$DOCKER_RISK|g" \
+    -e "s|{{AWS_RISK}}|$AWS_RISK|g" \
     "$HTML_REPORT"
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
 
