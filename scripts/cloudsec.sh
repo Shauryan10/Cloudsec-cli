@@ -652,8 +652,24 @@ if command -v kubectl >/dev/null 2>&1; then
               COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
         else
            K8S_COMPLIANCE="FAIL"
-           RISK_SCORE=$((RISK_SCORE + 20))
-           K8S_RISK=$((K8S_RISK + 20))
+           RISK_SCORE=$((RISK_SCORE + 25))
+           K8S_RISK=$((K8S_RISK + 25))
+           K8S_DETAILS="CRITICAL: Privileged pods detected."
+
+           REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+           <h3>☸️ Privileged Kubernetes Pods</h3>
+           <p><b>Severity:</b> CRITICAL</p>
+           <p><b>Risk:</b> Containers can escape normal security restrictions.</p>
+           <p><b>Fix:</b></p>
+           <pre>
+kubectl edit deployment <deployment-name>
+
+securityContext:
+  privileged: false
+           </pre>
+           <hr>"
+
+
         fi
 
     fi
@@ -876,6 +892,7 @@ sed -i.bak \
     -e "s|{{K8S_STATUS}}|$K8S_STATUS|g" \
     -e "s|{{RUNNING_PODS}}|$RUNNING_PODS|g" \
     -e "s|{{PRIVILEGED_PODS}}|$PRIVILEGED_PODS|g" \
+    -e "s|{{K8S_DETAILS}}|$K8S_DETAILS|g" \
     -e "s|{{FAILED_LOGINS}}|$FAILED_LOGINS|g" \
     -e "s|{{FAILED_LOGIN_STATUS}}|$FAILED_LOGIN_STATUS|g" \
     -e "s|{{FAILED_LOGIN_COLOR}}|$FAILED_LOGIN_COLOR|g" \
