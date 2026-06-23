@@ -920,6 +920,9 @@ else
     echo -e "Status        : ${RED}${BOLD}${UNDERLINE}$OVERALL_STATUS${RESET}"
 fi
 
+EXECUTIVE_SUMMARY=$(echo "$EXECUTIVE_SUMMARY" | \
+sed "s/{{OVERALL_STATUS}}/$OVERALL_STATUS/g")
+
 echo "Compliance     : $COMPLIANCE_SCORE/$COMPLIANCE_TOTAL ($COMPLIANCE_PERCENT%)"
 echo "Compliance Grade : $COMPLIANCE_GRADE"
 
