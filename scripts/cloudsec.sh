@@ -112,6 +112,9 @@ REMEDIATION_GUIDE=""
 
 COMPLIANCE_SCORE=0
 COMPLIANCE_TOTAL=7
+EXECUTIVE_SUMMARY=""
+KEY_FINDINGS=""
+IMMEDIATE_ACTIONS=""
 
 echo -e "${BLUE}${BOLD}System Information${RESET}"
 echo "-------------------------------------------------"
@@ -810,6 +813,85 @@ else
     COMPLIANCE_GRADE="F"
 fi
 
+
+# ===== EXECUTIVE SUMMARY =====
+
+KEY_FINDINGS=""
+
+if [ "$FIREWALL_STATUS" = "DISABLED" ]; then
+    KEY_FINDINGS="${KEY_FINDINGS}• Firewall disabled<br>"
+fi
+
+if [ "$ROOT_LOGIN_STATUS" = "ENABLED" ]; then
+    KEY_FINDINGS="${KEY_FINDINGS}• Root SSH login enabled<br>"
+fi
+
+if [ "$PRIVILEGED_CONTAINERS" -gt 0 ]; then
+    KEY_FINDINGS="${KEY_FINDINGS}• $PRIVILEGED_CONTAINERS privileged Docker container(s)<br>"
+fi
+
+if [ "$NAT_GATEWAYS" -gt 0 ]; then
+    KEY_FINDINGS="${KEY_FINDINGS}• $NAT_GATEWAYS NAT Gateway(s) active<br>"
+fi
+
+if [ "$PRIVILEGED_PODS" -gt 0 ]; then
+    KEY_FINDINGS="${KEY_FINDINGS}• $PRIVILEGED_PODS privileged Kubernetes pod(s)<br>"
+fi
+
+if [ -z "$KEY_FINDINGS" ]; then
+    KEY_FINDINGS="No critical findings detected."
+fi
+
+IMMEDIATE_ACTIONS=""
+
+if [ "$FIREWALL_STATUS" = "DISABLED" ]; then
+    IMMEDIATE_ACTIONS="${IMMEDIATE_ACTIONS}• Enable firewall<br>"
+fi
+
+if [ "$ROOT_LOGIN_STATUS" = "ENABLED" ]; then
+    IMMEDIATE_ACTIONS="${IMMEDIATE_ACTIONS}• Disable root SSH login<br>"
+fi
+
+if [ "$PRIVILEGED_CONTAINERS" -gt 0 ]; then
+    IMMEDIATE_ACTIONS="${IMMEDIATE_ACTIONS}• Remove privileged containers<br>"
+fi
+
+if [ "$PRIVILEGED_PODS" -gt 0 ]; then
+    IMMEDIATE_ACTIONS="${IMMEDIATE_ACTIONS}• Remove privileged Kubernetes pods<br>"
+fi
+
+if [ "$NAT_GATEWAYS" -gt 0 ]; then
+    IMMEDIATE_ACTIONS="${IMMEDIATE_ACTIONS}• Review NAT Gateway usage<br>"
+fi
+
+if [ -z "$IMMEDIATE_ACTIONS" ]; then
+    IMMEDIATE_ACTIONS="No immediate actions required."
+fi
+
+EXECUTIVE_SUMMARY="
+<p>
+CloudSec detected a <b>{{OVERALL_STATUS}}</b> environment.
+</p>
+
+<h3>Key Findings</h3>
+<p>
+$KEY_FINDINGS
+</p>
+
+<h3>Compliance</h3>
+<p>
+$COMPLIANCE_SCORE/$COMPLIANCE_TOTAL checks passed
+($COMPLIANCE_PERCENT%)
+</p>
+
+<h3>Immediate Actions</h3>
+<p>
+$IMMEDIATE_ACTIONS
+</p>
+"
+
+
+
 # ===== FINAL OVERALL RISK CALCULATION =====
 
 if [ "$RISK_SCORE" -lt 30 ]; then
@@ -912,6 +994,7 @@ sed -i.bak \
     -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
     -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
     -e "s|{{COMPLIANCE_GRADE}}|$COMPLIANCE_GRADE|g" \
+    -e "s|{{EXECUTIVE_SUMMARY}}|$EXECUTIVE_SUMMARY|g" \
     -e "s|{{SYSTEM_RISK}}|$SYSTEM_RISK|g" \
     -e "s|{{LINUX_RISK}}|$LINUX_RISK|g" \
     -e "s|{{DOCKER_RISK}}|$DOCKER_RISK|g" \
@@ -919,6 +1002,8 @@ sed -i.bak \
     -e "s|{{K8S_RISK}}|$AWS_RISK|g" \
     "$HTML_REPORT"
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
+    EXECUTIVE_ESCAPED=$(printf '%s' "$EXECUTIVE_SUMMARY" | perl -pe 's/\n/\\n/g')
+export EXECUTIVE_ESCAPED
 
 export REMEDIATION_ESCAPED
 
@@ -928,6 +1013,14 @@ BEGIN {
     $r =~ s/\\n/\n/g;
 }
 s/\{\{REMEDIATION_GUIDE\}\}/$r/g;
+' "$HTML_REPORT"
+
+perl -0777 -i -pe '
+BEGIN {
+    $r = $ENV{"EXECUTIVE_ESCAPED"};
+    $r =~ s/\\n/\n/g;
+}
+s/\{\{EXECUTIVE_SUMMARY\}\}/$r/g;
 ' "$HTML_REPORT"
 
 
