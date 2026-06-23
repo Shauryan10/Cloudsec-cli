@@ -920,8 +920,27 @@ else
     echo -e "Status        : ${RED}${BOLD}${UNDERLINE}$OVERALL_STATUS${RESET}"
 fi
 
-EXECUTIVE_SUMMARY=$(echo "$EXECUTIVE_SUMMARY" | \
-sed "s/{{OVERALL_STATUS}}/$OVERALL_STATUS/g")
+EXECUTIVE_SUMMARY="
+<p>
+CloudSec detected a <b>$OVERALL_STATUS</b> environment.
+</p>
+
+<h3>Key Findings</h3>
+<p>
+$KEY_FINDINGS
+</p>
+
+<h3>Compliance</h3>
+<p>
+$COMPLIANCE_SCORE/$COMPLIANCE_TOTAL checks passed
+($COMPLIANCE_PERCENT%)
+</p>
+
+<h3>Immediate Actions</h3>
+<p>
+$IMMEDIATE_ACTIONS
+</p>
+"
 
 echo "Compliance     : $COMPLIANCE_SCORE/$COMPLIANCE_TOTAL ($COMPLIANCE_PERCENT%)"
 echo "Compliance Grade : $COMPLIANCE_GRADE"
@@ -997,13 +1016,13 @@ sed -i.bak \
     -e "s|{{ROOT_LOGIN_COLOR}}|$ROOT_LOGIN_COLOR|g" \
     -e "s|{{SUDO_USERS}}|$SUDO_USERS|g" \
     -e "s|{{COMPLIANCE_GRADE}}|$COMPLIANCE_GRADE|g" \
-    -e "s|{{EXECUTIVE_SUMMARY}}|$EXECUTIVE_SUMMARY|g" \
     -e "s|{{SYSTEM_RISK}}|$SYSTEM_RISK|g" \
     -e "s|{{LINUX_RISK}}|$LINUX_RISK|g" \
     -e "s|{{DOCKER_RISK}}|$DOCKER_RISK|g" \
     -e "s|{{AWS_RISK}}|$AWS_RISK|g" \
-    -e "s|{{K8S_RISK}}|$AWS_RISK|g" \
+    -e "s|{{K8S_RISK}}|$K8S_RISK|g" \
     "$HTML_REPORT"
+    
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
     EXECUTIVE_ESCAPED=$(printf '%s' "$EXECUTIVE_SUMMARY" | perl -pe 's/\n/\\n/g')
 export EXECUTIVE_ESCAPED
@@ -1020,12 +1039,11 @@ s/\{\{REMEDIATION_GUIDE\}\}/$r/g;
 
 perl -0777 -i -pe '
 BEGIN {
-    $r = $ENV{"EXECUTIVE_ESCAPED"};
-    $r =~ s/\\n/\n/g;
+    $e = $ENV{"EXECUTIVE_ESCAPED"};
+    $e =~ s/\\n/\n/g;
 }
-s/\{\{EXECUTIVE_SUMMARY\}\}/$r/g;
+s/\{\{EXECUTIVE_SUMMARY\}\}/$e/g;
 ' "$HTML_REPORT"
-
 
 
 rm -f "$HTML_REPORT.bak"
