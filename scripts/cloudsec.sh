@@ -181,7 +181,6 @@ echo -e "${BLUE}${BOLD}Security Checks${RESET}"
 echo "-------------------------------------------------"
 print_status "Open Ports   " "$OPEN_PORTS" "$PORT_STATUS"
 echo ""
-
 # Day 5 Security Checks
 
 WORLD_WRITABLE=$(find /tmp /var/tmp -type f -perm -0002 2>/dev/null | wc -l | tr -d ' ')
@@ -296,7 +295,6 @@ elif command -v firewall-cmd >/dev/null 2>&1; then
 
         FIREWALL_STATUS="ENABLED"
         FIREWALL_COLOR="green"
-
     else
 
         FIREWALL_STATUS="DISABLED"
@@ -628,7 +626,7 @@ echo "Elastic IPs   : $ELASTIC_IPS"
 echo "NAT Gateways  : $NAT_GATEWAYS"
 echo ""
 
-
+#K8S
 
 K8S_STATUS="NOT INSTALLED"
 K8S_COLOR="yellow"
@@ -890,8 +888,6 @@ $IMMEDIATE_ACTIONS
 </p>
 "
 
-
-
 # ===== FINAL OVERALL RISK CALCULATION =====
 
 if [ "$RISK_SCORE" -lt 30 ]; then
@@ -952,7 +948,6 @@ echo ""
 #echo "==================================="
 
 cp "$TEMPLATE_FILE" "$HTML_REPORT"
-
 
 
 sed -i.bak \
@@ -1022,7 +1017,7 @@ sed -i.bak \
     -e "s|{{AWS_RISK}}|$AWS_RISK|g" \
     -e "s|{{K8S_RISK}}|$K8S_RISK|g" \
     "$HTML_REPORT"
-    
+
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
     EXECUTIVE_ESCAPED=$(printf '%s' "$EXECUTIVE_SUMMARY" | perl -pe 's/\n/\\n/g')
 export EXECUTIVE_ESCAPED
@@ -1044,7 +1039,6 @@ BEGIN {
 }
 s/\{\{EXECUTIVE_SUMMARY\}\}/$e/g;
 ' "$HTML_REPORT"
-
 
 rm -f "$HTML_REPORT.bak"
 
