@@ -1,6 +1,8 @@
 #!/bin/bash
 
 REPORT_DIR="reports"
+HISTORY_DIR="history"
+mkdir -p "$HISTORY_DIR"
 TEMPLATE_FILE="templates/report-template.html"
 CSS_FILE="templates/style.css"
 HTML_REPORT="$REPORT_DIR/security-report.html"
@@ -940,8 +942,42 @@ $IMMEDIATE_ACTIONS
 
 echo "Compliance     : $COMPLIANCE_SCORE/$COMPLIANCE_TOTAL ($COMPLIANCE_PERCENT%)"
 echo "Compliance Grade : $COMPLIANCE_GRADE"
+echo "Previous Risk Score : $PREVIOUS_RISK"
+echo "Risk Trend          : $RISK_TREND"
 
 echo ""
+
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+echo "$TIMESTAMP,$RISK_SCORE,$COMPLIANCE_PERCENT" \
+>> "$HISTORY_DIR/scan-history.csv"
+PREVIOUS_RISK="N/A"
+PREVIOUS_COMPLIANCE="N/A"
+
+if [ -f "$HISTORY_DIR/scan-history.csv" ]; then
+
+    PREVIOUS_LINE=$(tail -2 "$HISTORY_DIR/scan-history.csv" | head -1)
+
+    if [ -n "$PREVIOUS_LINE" ]; then
+
+        PREVIOUS_RISK=$(echo "$PREVIOUS_LINE" | cut -d',' -f2)
+        PREVIOUS_COMPLIANCE=$(echo "$PREVIOUS_LINE" | cut -d',' -f3)
+
+    fi
+
+fi
+
+RISK_TREND="UNCHANGED"
+
+if [ "$PREVIOUS_RISK" != "N/A" ]; then
+
+    if [ "$RISK_SCORE" -lt "$PREVIOUS_RISK" ]; then
+        RISK_TREND="IMPROVED"
+    elif [ "$RISK_SCORE" -gt "$PREVIOUS_RISK" ]; then
+        RISK_TREND="WORSENED"
+    fi
+
+fi
 
 #echo "============== DEBUG =============="
 #echo "$REMEDIATION_GUIDE"
@@ -1016,6 +1052,8 @@ sed -i.bak \
     -e "s|{{DOCKER_RISK}}|$DOCKER_RISK|g" \
     -e "s|{{AWS_RISK}}|$AWS_RISK|g" \
     -e "s|{{K8S_RISK}}|$K8S_RISK|g" \
+    -e "s|{{PREVIOUS_RISK}}|$PREVIOUS_RISK|g" \
+    -e "s|{{RISK_TREND}}|$RISK_TREND|g" \
     "$HTML_REPORT"
 
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
