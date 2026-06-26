@@ -111,9 +111,17 @@ AWS_RISK=0
 K8S_RISK=0
 
 REMEDIATION_GUIDE=""
+COMPLIANCE_REPORT=""
 
 COMPLIANCE_SCORE=0
 COMPLIANCE_TOTAL=7
+FIREWALL_COMPLIANCE="FAIL"
+ROOT_COMPLIANCE="FAIL"
+SSH_PASSWORD_COMPLIANCE="FAIL"
+PASSWORD_POLICY_COMPLIANCE="FAIL"
+WORLD_WRITABLE_COMPLIANCE="FAIL"
+DOCKER_COMPLIANCE="FAIL"
+K8S_COMPLIANCE="FAIL"
 EXECUTIVE_SUMMARY=""
 KEY_FINDINGS=""
 IMMEDIATE_ACTIONS=""
@@ -250,6 +258,7 @@ echo "Inactive Users       : $INACTIVE_USERS"
 echo "SSH Password Auth    : $SSH_PASSWORD_AUTH"
 echo ""
 
+WORLD_WRITABLE_COMPLIANCE="FAIL"
 if [ "$WORLD_WRITABLE" -le 3 ]; then
     WORLD_WRITABLE_COMPLIANCE="PASS"
     COMPLIANCE_SCORE=$((COMPLIANCE_SCORE+1))
@@ -260,6 +269,7 @@ fi
 
 FIREWALL_STATUS="UNKNOWN"
 FIREWALL_COLOR="yellow"
+FIREWALL_COMPLIANCE="FAIL"
 
 if command -v ufw >/dev/null 2>&1; then
 
@@ -363,6 +373,7 @@ fi
 
 SSH_STATUS="NOT RUNNING"
 SSH_COLOR="green"
+ROOT_COMPLIANCE="FAIL"
 
 if pgrep sshd >/dev/null 2>&1; then
     SSH_STATUS="RUNNING"
@@ -380,6 +391,7 @@ fi
 
 ROOT_LOGIN_STATUS="UNKNOWN"
 ROOT_LOGIN_COLOR="yellow"
+SSH_PASSWORD_COMPLIANCE="FAIL"
 
 if [ -f /etc/ssh/sshd_config ]; then
     if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
@@ -447,6 +459,7 @@ EXPOSED_PORTS="0"
 
 DOCKER_DETAILS="No Docker findings."
 
+DOCKER_COMPLIANCE="N/A"
 if command -v docker >/dev/null 2>&1; then
 
     if docker info >/dev/null 2>&1; then
@@ -640,6 +653,7 @@ EXPOSED_SERVICES=0
 
 K8S_DETAILS="No Kubernetes findings."
 
+K8S_COMPLIANCE="N/A"
 if command -v kubectl >/dev/null 2>&1; then
 
     if kubectl cluster-info >/dev/null 2>&1; then
@@ -723,6 +737,7 @@ fi
 
 PASSWORD_POLICY="UNKNOWN"
 PASSWORD_POLICY_COLOR="yellow"
+PASSWORD_POLICY_COMPLIANCE="FAIL"
 
 if [ -f /etc/login.defs ]; then
 
@@ -801,7 +816,17 @@ if [ -f /etc/ssh/sshd_config ]; then
     fi
 fi
 
+COMPLIANCE_REPORT="
+<tr><td>Firewall Enabled</td><td>$FIREWALL_COMPLIANCE</td></tr>
+<tr><td>Root SSH Disabled</td><td>$ROOT_COMPLIANCE</td></tr>
+<tr><td>SSH Password Auth Disabled</td><td>$SSH_PASSWORD_COMPLIANCE</td></tr>
+<tr><td>Password Policy Configured</td><td>$PASSWORD_POLICY_COMPLIANCE</td></tr>
+<tr><td>World Writable Files Limited</td><td>$WORLD_WRITABLE_COMPLIANCE</td></tr>
+<tr><td>Privileged Containers</td><td>$DOCKER_COMPLIANCE</td></tr>
+<tr><td>Privileged Pods</td><td>$K8S_COMPLIANCE</td></tr>
+"
 COMPLIANCE_PERCENT=$((COMPLIANCE_SCORE * 100 / COMPLIANCE_TOTAL))
+
 
 if [ "$COMPLIANCE_PERCENT" -ge 90 ]; then
     COMPLIANCE_GRADE="A"
@@ -1060,6 +1085,10 @@ sed -i.bak \
     EXECUTIVE_ESCAPED=$(printf '%s' "$EXECUTIVE_SUMMARY" | perl -pe 's/\n/\\n/g')
 export EXECUTIVE_ESCAPED
 
+COMPLIANCE_ESCAPED=$(printf '%s' "$COMPLIANCE_REPORT" | perl -pe 's/\n/\\n/g')
+
+export COMPLIANCE_ESCAPED
+
 export REMEDIATION_ESCAPED
 
 perl -0777 -i -pe '
@@ -1076,6 +1105,14 @@ BEGIN {
     $e =~ s/\\n/\n/g;
 }
 s/\{\{EXECUTIVE_SUMMARY\}\}/$e/g;
+' "$HTML_REPORT"
+
+perl -0777 -i -pe '
+BEGIN {
+    $c = $ENV{"COMPLIANCE_ESCAPED"};
+    $c =~ s/\\n/\n/g;
+}
+s/\{\{COMPLIANCE_REPORT\}\}/$c/g;
 ' "$HTML_REPORT"
 
 rm -f "$HTML_REPORT.bak"
