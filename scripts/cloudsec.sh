@@ -110,6 +110,9 @@ DOCKER_RISK=0
 AWS_RISK=0
 K8S_RISK=0
 
+VULNERABILITY_COUNT=0
+VULNERABILITY_DETAILS=""
+
 REMEDIATION_GUIDE=""
 COMPLIANCE_REPORT=""
 
@@ -701,6 +704,52 @@ echo "Running Pods   : $RUNNING_PODS"
 echo "Privileged Pods: $PRIVILEGED_PODS"
 echo ""
 
+echo -e "${BLUE}${BOLD}Vulnerability Scan${RESET}"
+echo "-------------------------------------------------"
+
+if command -v brew >/dev/null 2>&1; then
+
+    BREW_UPDATES=$(brew outdated)
+
+    if [ -n "$BREW_UPDATES" ]; then
+
+        VULNERABILITY_COUNT=$(echo "$BREW_UPDATES" | wc -l | tr -d ' ')
+
+        VULNERABILITY_DETAILS=$(echo "$BREW_UPDATES" | sed 's/$/<br>/')
+
+        RISK_SCORE=$((RISK_SCORE + 15))
+
+    fi
+fi
+
+echo "Packages needing updates : $VULNERABILITY_COUNT"
+
+if [ "$VULNERABILITY_COUNT" -gt 0 ]; then
+    echo "Potential vulnerabilities detected."
+else
+    echo "No vulnerable packages detected."
+fi
+
+echo ""
+
+if [ "$VULNERABILITY_COUNT" -gt 0 ]; then
+
+REMEDIATION_GUIDE="${REMEDIATION_GUIDE}
+
+<h3>📦 Outdated Packages</h3>
+
+<p><b>Severity:</b> HIGH</p>
+
+<p>Install the latest security patches.</p>
+
+<pre>
+sudo apt update
+sudo apt upgrade
+</pre>
+
+<hr>"
+fi
+
 
 
 WORLD_WRITABLE=$(find /tmp /var/tmp -type f -perm -0002 2>/dev/null | wc -l | tr -d ' ')
@@ -967,8 +1016,7 @@ $IMMEDIATE_ACTIONS
 
 echo "Compliance     : $COMPLIANCE_SCORE/$COMPLIANCE_TOTAL ($COMPLIANCE_PERCENT%)"
 echo "Compliance Grade : $COMPLIANCE_GRADE"
-echo "Previous Risk Score : $PREVIOUS_RISK"
-echo "Risk Trend          : $RISK_TREND"
+
 
 echo ""
 
@@ -1003,6 +1051,8 @@ if [ "$PREVIOUS_RISK" != "N/A" ]; then
     fi
 
 fi
+echo "Previous Risk Score : $PREVIOUS_RISK"
+echo "Risk Trend          : $RISK_TREND"
 
 #echo "============== DEBUG =============="
 #echo "$REMEDIATION_GUIDE"
@@ -1079,6 +1129,7 @@ sed -i.bak \
     -e "s|{{K8S_RISK}}|$K8S_RISK|g" \
     -e "s|{{PREVIOUS_RISK}}|$PREVIOUS_RISK|g" \
     -e "s|{{RISK_TREND}}|$RISK_TREND|g" \
+    -e "s|{{VULNERABILITY_COUNT}}|$VULNERABILITY_COUNT|g" \
     "$HTML_REPORT"
 
     REMEDIATION_ESCAPED=$(printf '%s' "$REMEDIATION_GUIDE" | perl -pe 's/\n/\\n/g')
@@ -1113,6 +1164,17 @@ BEGIN {
     $c =~ s/\\n/\n/g;
 }
 s/\{\{COMPLIANCE_REPORT\}\}/$c/g;
+' "$HTML_REPORT"
+
+VULNERABILITY_ESCAPED=$(printf '%s' "$VULNERABILITY_DETAILS" | perl -pe 's/\n/\\n/g')
+export VULNERABILITY_ESCAPED
+
+perl -0777 -i -pe '
+BEGIN {
+    $v = $ENV{"VULNERABILITY_ESCAPED"};
+    $v =~ s/\\n/\n/g;
+}
+s/\{\{VULNERABILITY_DETAILS\}\}/$v/g;
 ' "$HTML_REPORT"
 
 rm -f "$HTML_REPORT.bak"
