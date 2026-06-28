@@ -6,6 +6,9 @@ mkdir -p "$HISTORY_DIR"
 TEMPLATE_FILE="templates/report-template.html"
 CSS_FILE="templates/style.css"
 HTML_REPORT="$REPORT_DIR/security-report.html"
+JSON_REPORT="$REPORT_DIR/security-report.json"
+PDF_REPORT="$REPORT_DIR/security-report.pdf"
+MARKDOWN_REPORT="$REPORT_DIR/security-report.md"
 
 mkdir -p "$REPORT_DIR"
 
@@ -1180,3 +1183,294 @@ s/\{\{VULNERABILITY_DETAILS\}\}/$v/g;
 rm -f "$HTML_REPORT.bak"
 
 echo -e "${GREEN}${BOLD}HTML report generated:${RESET} $HTML_REPORT"
+
+
+####################################################
+# PDF Report Generation
+####################################################
+
+python3 export/generate_pdf.py \
+"$HOSTNAME_VALUE" \
+"$CURRENT_USER" \
+"$SCAN_DATE" \
+"$RISK_SCORE" \
+"$OVERALL_STATUS" \
+"$COMPLIANCE_SCORE" \
+"$COMPLIANCE_TOTAL" \
+"$COMPLIANCE_PERCENT" \
+"$COMPLIANCE_GRADE" \
+"$DISK_USAGE" \
+"$MEMORY_USAGE" \
+"$OPEN_PORTS" \
+"$FAILED_LOGINS" \
+"$FIREWALL_STATUS" \
+"$SSH_STATUS" \
+"$ROOT_LOGIN_STATUS" \
+"$DOCKER_STATUS" \
+"$DOCKER_CONTAINERS" \
+"$PRIVILEGED_CONTAINERS" \
+"$ROOT_CONTAINERS" \
+"$AWS_ACCOUNT" \
+"$EC2_RUNNING" \
+"$RDS_RUNNING" \
+"$NAT_GATEWAYS" \
+"$RUNNING_PODS" \
+"$PRIVILEGED_PODS"
+
+
+####################################################
+# JSON Report Generation
+####################################################
+
+cat > "$JSON_REPORT" <<EOF
+{
+    "scan_time": "$SCAN_DATE",
+    "hostname": "$HOSTNAME_VALUE",
+    "user": "$CURRENT_USER",
+
+    "risk": {
+        "score": "$RISK_SCORE",
+        "status": "$OVERALL_STATUS"
+    },
+
+    "compliance": {
+        "score": "$COMPLIANCE_SCORE",
+        "total": "$COMPLIANCE_TOTAL",
+        "percentage": "$COMPLIANCE_PERCENT",
+        "grade": "$COMPLIANCE_GRADE"
+    },
+
+    "system": {
+        "disk_usage": "$DISK_USAGE%",
+        "memory_usage": "$MEMORY_USAGE%",
+        "open_ports": "$OPEN_PORTS"
+    },
+
+    "linux": {
+        "firewall": "$FIREWALL_STATUS",
+        "ssh": "$SSH_STATUS",
+        "root_login": "$ROOT_LOGIN_STATUS",
+        "failed_logins": "$FAILED_LOGINS"
+    },
+
+    "docker": {
+        "status": "$DOCKER_STATUS",
+        "containers": "$DOCKER_CONTAINERS",
+        "privileged": "$PRIVILEGED_CONTAINERS"
+    },
+
+    "aws": {
+        "status": "$AWS_STATUS",
+        "ec2": "$EC2_RUNNING",
+        "rds": "$RDS_RUNNING",
+        "nat": "$NAT_GATEWAYS"
+    },
+
+    "kubernetes": {
+        "status": "$K8S_STATUS",
+        "pods": "$RUNNING_PODS",
+        "privileged": "$PRIVILEGED_PODS"
+    }
+}
+EOF
+
+
+echo "Generating Markdown report..."
+
+cat > "$MARKDOWN_REPORT" <<EOF
+# CloudSec CLI Security Report
+
+## System Information
+
+Hostname: $HOSTNAME_VALUE
+
+User: $CURRENT_USER
+
+Scan Date: $SCAN_DATE
+
+---
+
+## Overall Security
+
+Risk Score: $RISK_SCORE / 100
+
+Risk Level: $OVERALL_STATUS
+
+Compliance:
+$COMPLIANCE_SCORE / $COMPLIANCE_TOTAL
+($COMPLIANCE_PERCENT%)
+
+Grade:
+$COMPLIANCE_GRADE
+
+---
+
+## System Health
+
+Disk Usage:
+$DISK_USAGE%
+
+Memory Usage:
+$MEMORY_USAGE%
+
+Open Ports:
+$OPEN_PORTS
+
+---
+
+## Linux Security
+
+Failed Logins:
+$FAILED_LOGINS
+
+Firewall:
+$FIREWALL_STATUS
+
+Root Login:
+$ROOT_LOGIN_STATUS
+
+Password Policy:
+$PASSWORD_POLICY
+
+World Writable Files:
+$WORLD_WRITABLE
+
+Inactive Users:
+$INACTIVE_USERS
+
+SSH Password Authentication:
+$SSH_PASSWORD_AUTH
+
+---
+
+## Docker
+
+Docker:
+$DOCKER_STATUS
+
+Running Containers:
+$DOCKER_CONTAINERS
+
+Privileged Containers:
+$PRIVILEGED_CONTAINERS
+
+Root Containers:
+$ROOT_CONTAINERS
+
+Published Ports:
+$EXPOSED_PORTS
+
+---
+
+## AWS
+
+AWS:
+$AWS_STATUS
+
+Account:
+$AWS_ACCOUNT
+
+Running EC2:
+$EC2_RUNNING
+
+Running RDS:
+$RDS_RUNNING
+
+Elastic IPs:
+$ELASTIC_IPS
+
+NAT Gateways:
+$NAT_GATEWAYS
+
+---
+
+## Kubernetes
+
+Cluster:
+$K8S_STATUS
+
+Running Pods:
+$RUNNING_PODS
+
+Privileged Pods:
+$PRIVILEGED_PODS
+
+---
+
+## Risk Distribution
+
+System Health:
+$SYSTEM_RISK
+
+Linux:
+$LINUX_RISK
+
+Docker:
+$DOCKER_RISK
+
+AWS:
+$AWS_RISK
+
+Kubernetes:
+$K8S_RISK
+
+---
+
+## Executive Summary
+
+CloudSec detected a **$OVERALL_STATUS** environment.
+
+---
+
+## Compliance Report
+
+Firewall:
+$FIREWALL_COMPLIANCE
+
+Root Login:
+$ROOT_COMPLIANCE
+
+SSH Password Authentication:
+$SSH_PASSWORD_COMPLIANCE
+
+Password Policy:
+$PASSWORD_POLICY_COMPLIANCE
+
+World Writable Files:
+$WORLD_WRITABLE_COMPLIANCE
+
+Docker:
+$DOCKER_COMPLIANCE
+
+Kubernetes:
+$K8S_COMPLIANCE
+
+---
+
+## Remediation
+
+$(echo "$REMEDIATION_GUIDE" | sed 's/<[^>]*>//g')
+
+EOF
+
+if command -v pandoc >/dev/null 2>&1; then
+
+    if pandoc "$MARKDOWN_REPORT" \
+    --pdf-engine=tectonic \
+    -o "$PDF_REPORT"
+    then
+       echo "PDF Report generated:"
+       echo "$PDF_REPORT"
+    else
+       echo "Failed to generate PDF."
+    fi
+
+else
+
+    echo "Pandoc not installed."
+    echo "Install with:"
+    echo "brew install pandoc"
+
+fi
+
+echo -e "${GREEN}${BOLD}JSON report generated:${RESET} $JSON_REPORT"

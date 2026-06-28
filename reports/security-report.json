@@ -1,0 +1,49 @@
+{
+    "scan_time": "Sun Jun 28 21:15:09 IST 2026",
+    "hostname": "Shonis-MacBook-Pro.local",
+    "user": "shonishindhu",
+
+    "risk": {
+        "score": "45",
+        "status": "MEDIUM RISK"
+    },
+
+    "compliance": {
+        "score": "4",
+        "total": "7",
+        "percentage": "57",
+        "grade": "F"
+    },
+
+    "system": {
+        "disk_usage": "5%",
+        "memory_usage": "0%",
+        "open_ports": "8"
+    },
+
+    "linux": {
+        "firewall": "ENABLED",
+        "ssh": "NOT RUNNING",
+        "root_login": "DISABLED",
+        "failed_logins": "0"
+    },
+
+    "docker": {
+        "status": "INSTALLED BUT NOT RUNNING",
+        "containers": "0",
+        "privileged": "0"
+    },
+
+    "aws": {
+        "status": "CONNECTED",
+        "ec2": "0",
+        "rds": "0",
+        "nat": "0"
+    },
+
+    "kubernetes": {
+        "status": "NOT INSTALLED",
+        "pods": "0",
+        "privileged": "0"
+    }
+}
