@@ -1,10 +1,10 @@
 {
-    "scan_time": "Sun Jun 28 21:15:09 IST 2026",
+    "scan_time": "Mon Jun 29 21:28:46 IST 2026",
     "hostname": "Shonis-MacBook-Pro.local",
     "user": "shonishindhu",
 
     "risk": {
-        "score": "45",
+        "score": "35",
         "status": "MEDIUM RISK"
     },
 
@@ -18,7 +18,7 @@
     "system": {
         "disk_usage": "5%",
         "memory_usage": "0%",
-        "open_ports": "8"
+        "open_ports": "7"
     },
 
     "linux": {
