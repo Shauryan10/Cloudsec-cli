@@ -1,7 +1,11 @@
 #!/bin/bash
 
 REPORT_DIR="reports"
+source scripts/logger.sh
 HISTORY_DIR="history"
+LOG_DIR="logs"
+mkdir -p "$LOG_DIR"
+AUDIT_LOG="$LOG_DIR/cloudsec.log"
 mkdir -p "$HISTORY_DIR"
 TEMPLATE_FILE="templates/report-template.html"
 CSS_FILE="templates/style.css"
@@ -101,6 +105,7 @@ print_status() {
 }
 
 show_banner
+log "INFO" "CloudSec scan started"
 
 HOSTNAME_VALUE=$(hostname)
 CURRENT_USER=$(whoami)
@@ -452,6 +457,7 @@ fi
 
 echo "Sudo/Admin Users : $SUDO_USERS"
 echo ""
+log "INFO" "Linux scan completed"
 
 DOCKER_STATUS="NOT INSTALLED"
 DOCKER_COLOR="yellow"
@@ -560,6 +566,7 @@ echo "Privileged Containers: $PRIVILEGED_CONTAINERS"
 echo "Root Containers      : $ROOT_CONTAINERS"
 echo "Published Ports      : $EXPOSED_PORTS"
 echo ""
+log "INFO" "Docker scan completed"
 
 
 AWS_STATUS="NOT CONFIGURED"
@@ -646,6 +653,7 @@ echo "RDS Running   : $RDS_RUNNING"
 echo "Elastic IPs   : $ELASTIC_IPS"
 echo "NAT Gateways  : $NAT_GATEWAYS"
 echo ""
+log "INFO" "AWS scan completed"
 
 #K8S
 
@@ -706,6 +714,7 @@ echo "Cluster Status : $K8S_STATUS"
 echo "Running Pods   : $RUNNING_PODS"
 echo "Privileged Pods: $PRIVILEGED_PODS"
 echo ""
+log "INFO" "Kubernetes scan completed"
 
 echo -e "${BLUE}${BOLD}Vulnerability Scan${RESET}"
 echo "-------------------------------------------------"
@@ -1183,13 +1192,15 @@ s/\{\{VULNERABILITY_DETAILS\}\}/$v/g;
 rm -f "$HTML_REPORT.bak"
 
 echo -e "${GREEN}${BOLD}HTML report generated:${RESET} $HTML_REPORT"
+echo "$(date '+%F %T') | HTML report generated | $HTML_REPORT" >> "$AUDIT_LOG"
+log "INFO" "HTML report generated"
 
 
 ####################################################
 # PDF Report Generation
 ####################################################
 
-python3 export/generate_pdf.py \
+#python3 export/generate_pdf.py \
 "$HOSTNAME_VALUE" \
 "$CURRENT_USER" \
 "$SCAN_DATE" \
@@ -1452,6 +1463,7 @@ $K8S_COMPLIANCE
 $(echo "$REMEDIATION_GUIDE" | sed 's/<[^>]*>//g')
 
 EOF
+log "INFO" "Markdown report generated"
 
 if command -v pandoc >/dev/null 2>&1; then
 
@@ -1461,6 +1473,8 @@ if command -v pandoc >/dev/null 2>&1; then
     then
        echo "PDF Report generated:"
        echo "$PDF_REPORT"
+       echo "$(date '+%F %T') | PDF report generated | $PDF_REPORT" >> "$AUDIT_LOG"
+       log "INFO" "PDF report generated"
     else
        echo "Failed to generate PDF."
     fi
@@ -1474,3 +1488,11 @@ else
 fi
 
 echo -e "${GREEN}${BOLD}JSON report generated:${RESET} $JSON_REPORT"
+echo "$(date '+%F %T') | JSON report generated | $JSON_REPORT" >> "$AUDIT_LOG"
+log "INFO" "JSON report generated"
+bash scripts/archive-report.sh
+bash scripts/compare-scan.sh
+bash scripts/statistics.sh
+echo ""
+
+

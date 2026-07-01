@@ -6,13 +6,13 @@ Hostname: Shonis-MacBook-Pro.local
 
 User: shonishindhu
 
-Scan Date: Wed Jul  1 20:53:21 IST 2026
+Scan Date: Mon Jun 29 21:28:46 IST 2026
 
 ---
 
 ## Overall Security
 
-Risk Score: 45 / 100
+Risk Score: 35 / 100
 
 Risk Level: MEDIUM RISK
 
@@ -28,13 +28,13 @@ F
 ## System Health
 
 Disk Usage:
-6%
+5%
 
 Memory Usage:
 0%
 
 Open Ports:
-9
+7
 
 ---
 
@@ -120,7 +120,7 @@ Privileged Pods:
 ## Risk Distribution
 
 System Health:
-20
+0
 
 Linux:
 5
