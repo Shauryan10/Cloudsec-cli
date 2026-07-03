@@ -1,7 +1,20 @@
 #!/bin/bash
+source scripts/cli.sh "$@"
+source scripts/banner.sh
+
+if [[ "$1" == "--help" ]]; then
+    cat docs/help.txt
+    exit 0
+fi
+
+if [[ "$1" == "--version" ]]; then
+    echo "CloudSec CLI v1.0.0"
+    exit 0
+fi
 
 REPORT_DIR="reports"
 source scripts/logger.sh
+source scripts/cli.sh
 HISTORY_DIR="history"
 LOG_DIR="logs"
 mkdir -p "$LOG_DIR"

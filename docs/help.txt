@@ -1,0 +1,25 @@
+CloudSec CLI
+
+Usage:
+  cloudsec [options]
+
+Options
+  --linux
+  --docker
+  --aws
+  --k8s
+  --all
+  --json
+  --pdf
+  --help
+  --version
+
+Examples
+
+cloudsec --linux
+
+cloudsec --docker
+
+cloudsec --aws --json
+
+cloudsec --all --pdf
