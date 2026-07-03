@@ -8,7 +8,6 @@ mkdir -p "$LOG_DIR"
 AUDIT_LOG="$LOG_DIR/cloudsec.log"
 mkdir -p "$HISTORY_DIR"
 TEMPLATE_FILE="templates/report-template.html"
-CSS_FILE="templates/style.css"
 HTML_REPORT="$REPORT_DIR/security-report.html"
 JSON_REPORT="$REPORT_DIR/security-report.json"
 PDF_REPORT="$REPORT_DIR/security-report.pdf"
@@ -155,7 +154,7 @@ fi
 if command -v ss >/dev/null 2>&1; then
     OPEN_PORTS=$(ss -tuln | tail -n +2 | wc -l | tr -d ' ')
 elif command -v lsof >/dev/null 2>&1; then
-    OPEN_PORTS=$(lsof -i -P -n | grep LISTEN | wc -l | tr -d ' ')
+    OPEN_PORTS=$(lsof -i -P -n | grep -c LISTEN)
 else
     OPEN_PORTS=0
 fi
@@ -243,9 +242,9 @@ echo "-------------------------------------------------"
 FAILED_LOGINS=0
 
 if [ -f /var/log/auth.log ]; then
-    FAILED_LOGINS=$(grep "Failed password" /var/log/auth.log 2>/dev/null | wc -l | tr -d ' ')
+    FAILED_LOGINS=$(grep -c "Failed password" /var/log/auth.log 2>/dev/null)
 elif [ -f /var/log/secure ]; then
-    FAILED_LOGINS=$(grep "Failed password" /var/log/secure 2>/dev/null | wc -l | tr -d ' ')
+   FAILED_LOGINS=$(grep -c "Failed password" /var/log/secure 2>/dev/null)
 else
     FAILED_LOGINS=0
 fi
@@ -600,7 +599,7 @@ if command -v aws >/dev/null 2>&1; then
 
         if [ -n "$EC2_DATA" ]; then
             EC2_RUNNING=$(echo "$EC2_DATA" | wc -l | tr -d ' ')
-            EC2_DETAILS=$(echo "$EC2_DATA" | sed 's/$/<br>/')
+            EC2_DETAILS="${EC2_DATA//$'\n'/<br>}"
             RISK_SCORE=$((RISK_SCORE + 15))
             AWS_RISK=$((AWS_RISK + 15))
         fi
@@ -611,7 +610,7 @@ if command -v aws >/dev/null 2>&1; then
 
         if [ -n "$RDS_DATA" ]; then
             RDS_RUNNING=$(echo "$RDS_DATA" | wc -l | tr -d ' ')
-            RDS_DETAILS=$(echo "$RDS_DATA" | sed 's/$/<br>/')
+            RDS_DETAILS="${RDS_DATA//$'\n'/<br>}"
             RISK_SCORE=$((RISK_SCORE + 15))
             AWS_RISK=$((AWS_RISK + 15))
         fi
@@ -622,7 +621,7 @@ if command -v aws >/dev/null 2>&1; then
 
         if [ -n "$ELASTIC_IP_DATA" ]; then
             ELASTIC_IPS=$(echo "$ELASTIC_IP_DATA" | wc -l | tr -d ' ')
-            ELASTIC_IP_DETAILS=$(echo "$ELASTIC_IP_DATA" | sed 's/$/<br>/')
+            ELASTIC_IP_DETAILS="${ELASTIC_IP_DATA//$'\n'/<br>}"
             RISK_SCORE=$((RISK_SCORE + 10))
             AWS_RISK=$((AWS_RISK + 10))
         fi
@@ -634,7 +633,7 @@ if command -v aws >/dev/null 2>&1; then
 
         if [ -n "$NAT_DATA" ]; then
             NAT_GATEWAYS=$(echo "$NAT_DATA" | wc -l | tr -d ' ')
-            NAT_GATEWAY_DETAILS=$(echo "$NAT_DATA" | sed 's/$/<br>/')
+            NAT_GATEWAY_DETAILS="${NAT_DATA//$'\n'/<br>}"
             RISK_SCORE=$((RISK_SCORE + 25))
             AWS_RISK=$((AWS_RISK + 25))
         fi
@@ -727,7 +726,7 @@ if command -v brew >/dev/null 2>&1; then
 
         VULNERABILITY_COUNT=$(echo "$BREW_UPDATES" | wc -l | tr -d ' ')
 
-        VULNERABILITY_DETAILS=$(echo "$BREW_UPDATES" | sed 's/$/<br>/')
+        VULNERABILITY_DETAILS="${BREW_UPDATES//$'\n'/<br>}"
 
         RISK_SCORE=$((RISK_SCORE + 15))
 
