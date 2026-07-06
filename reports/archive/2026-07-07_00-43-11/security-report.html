@@ -33,7 +33,7 @@
         
                         <span>🖥 Host</span>
         
-                        <strong>{{HOSTNAME}}</strong>
+                        <strong>Shonis-MacBook-Pro.local</strong>
         
                     </div>
         
@@ -41,7 +41,7 @@
         
                         <span>👤 User</span>
         
-                        <strong>{{USER}}</strong>
+                        <strong>shonishindhu</strong>
         
                     </div>
         
@@ -49,7 +49,7 @@
         
                         <span>📅 Generated</span>
         
-                        <strong>{{SCAN_DATE}}</strong>
+                        <strong>Tue Jul  7 00:43:00 IST 2026</strong>
         
                     </div>
         
@@ -67,7 +67,7 @@
             
             <div class="metric">
             
-            {{RISK_SCORE}}
+            35
             
             </div>
             
@@ -81,11 +81,11 @@
             
             <div class="metric">
             
-            {{COMPLIANCE_PERCENT}}%
+            57%
             
             </div>
             
-            <p>{{COMPLIANCE_GRADE}}</p>
+            <p>F</p>
             
             </div>
             
@@ -93,9 +93,9 @@
             
             <h3>Overall Status</h3>
             
-            <div class="{{OVERALL_COLOR}}">
+            <div class="yellow">
             
-            {{OVERALL_STATUS}}
+            MEDIUM RISK
             
             </div>
             
@@ -107,11 +107,11 @@
             
             <div class="metric-small">
             
-            {{HOSTNAME}}
+            Shonis-MacBook-Pro.local
             
             </div>
             
-            <p>{{USER}}</p>
+            <p>shonishindhu</p>
             
             </div>
             
@@ -147,7 +147,27 @@
             
                     <div class="summary-content">
             
-                        {{EXECUTIVE_SUMMARY}}
+                        
+<p>
+CloudSec detected a <b>MEDIUM RISK</b> environment.
+</p>
+
+<h3>Key Findings</h3>
+<p>
+No critical findings detected.
+</p>
+
+<h3>Compliance</h3>
+<p>
+4/7 checks passed
+(57%)
+</p>
+
+<h3>Immediate Actions</h3>
+<p>
+No immediate actions required.
+</p>
+
             
                     </div>
             
@@ -166,14 +186,14 @@
             
                         <span>Risk Score</span>
             
-                        <strong>{{RISK_SCORE}} / 100</strong>
+                        <strong>35 / 100</strong>
             
                     </div>
             
                     <div class="progress">
             
                         <div class="progress-fill danger-fill"
-                             style="width: {{RISK_SCORE}}%;">
+                             style="width: 35%;">
                         </div>
             
                     </div>
@@ -186,14 +206,14 @@
             
                         <span>Compliance</span>
             
-                        <strong>{{COMPLIANCE_PERCENT}}%</strong>
+                        <strong>57%</strong>
             
                     </div>
             
                     <div class="progress">
             
                         <div class="progress-fill success-fill"
-                             style="width: {{COMPLIANCE_PERCENT}}%;">
+                             style="width: 57%;">
                         </div>
             
                     </div>
@@ -204,9 +224,9 @@
             
                     <h3>Overall Status</h3>
             
-                    <div class="{{OVERALL_COLOR}}">
+                    <div class="yellow">
             
-                        {{OVERALL_STATUS}}
+                        MEDIUM RISK
             
                     </div>
             
@@ -214,7 +234,7 @@
             
                         Compliance Grade
             
-                        <strong>{{COMPLIANCE_GRADE}}</strong>
+                        <strong>F</strong>
             
                     </p>
             
@@ -241,11 +261,11 @@
             
             <tr>
             
-            <td>{{PREVIOUS_RISK}}</td>
+            <td>35</td>
             
-            <td>{{RISK_SCORE}}</td>
+            <td>35</td>
             
-            <td>{{RISK_TREND}}</td>
+            <td>UNCHANGED</td>
             
             </tr>
             
@@ -265,17 +285,17 @@
         
                 <tr>
                     <td>Compliance Checks Passed</td>
-                    <td>{{COMPLIANCE_SCORE}} / {{COMPLIANCE_TOTAL}}</td>
+                    <td>4 / 7</td>
                 </tr>
         
                 <tr>
                     <td>Compliance Percentage</td>
-                    <td>{{COMPLIANCE_PERCENT}}%</td>
+                    <td>57%</td>
                 </tr>
         
                 <tr>
                     <td>Compliance Grade</td>
-                    <td>{{COMPLIANCE_GRADE}}</td>
+                    <td>F</td>
                 </tr>
         
             </table>
@@ -290,7 +310,15 @@
                     <th>Result</th>
                 </tr>
         
-                {{COMPLIANCE_REPORT}}
+                
+<tr><td>Firewall Enabled</td><td>PASS</td></tr>
+<tr><td>Root SSH Disabled</td><td>PASS</td></tr>
+<tr><td>SSH Password Auth Disabled</td><td>FAIL</td></tr>
+<tr><td>Password Policy Configured</td><td>FAIL</td></tr>
+<tr><td>World Writable Files Limited</td><td>PASS</td></tr>
+<tr><td>Privileged Containers</td><td>PASS</td></tr>
+<tr><td>Privileged Pods</td><td>N/A</td></tr>
+
         
             </table>
         </section>
@@ -305,13 +333,13 @@
                 </tr>
                 <tr>
                     <td>Disk Usage</td>
-                    <td>{{DISK_USAGE}}</td>
-                    <td class="{{DISK_COLOR}}">{{DISK_STATUS}}</td>
+                    <td>6%</td>
+                    <td class="green">OK</td>
                 </tr>
                 <tr>
                     <td>Memory Usage</td>
-                    <td>{{MEMORY_USAGE}}</td>
-                    <td class="{{MEMORY_COLOR}}">{{MEMORY_STATUS}}</td>
+                    <td>0%</td>
+                    <td class="green">OK</td>
                 </tr>
             </table>
         </section>
@@ -326,8 +354,8 @@
                 </tr>
                 <tr>
                     <td>Open Ports</td>
-                    <td>{{OPEN_PORTS}}</td>
-                    <td class="{{PORT_COLOR}}">{{PORT_STATUS}}</td>
+                    <td>7</td>
+                    <td class="yellow">WARNING</td>
                 </tr>
             </table>
         </section>
@@ -342,59 +370,59 @@
                 </tr>
                 <tr>
                     <td>Failed Login Attempts</td>
-                    <td>{{FAILED_LOGINS}}</td>
-                    <td class="{{FAILED_LOGIN_COLOR}}">{{FAILED_LOGIN_STATUS}}</td>
+                    <td>0</td>
+                    <td class="green">OK</td>
                 </tr>
                 <tr>
                     <td>Firewall</td>
-                    <td>{{FIREWALL_STATUS}}</td>
-                    <td class="{{FIREWALL_COLOR}}">{{FIREWALL_STATUS}}</td>
+                    <td>ENABLED</td>
+                    <td class="green">ENABLED</td>
                 </tr>
                 <tr>
                     <td>SSH Service</td>
-                    <td>{{SSH_STATUS}}</td>
-                    <td class="{{SSH_COLOR}}">{{SSH_STATUS}}</td>
+                    <td>NOT RUNNING</td>
+                    <td class="green">NOT RUNNING</td>
                 </tr>
                 <tr>
                     <td>Root SSH Login</td>
-                    <td>{{ROOT_LOGIN_STATUS}}</td>
-                    <td class="{{ROOT_LOGIN_COLOR}}">{{ROOT_LOGIN_STATUS}}</td>
+                    <td>DISABLED</td>
+                    <td class="green">DISABLED</td>
                 </tr>
                 
                 <tr>
                     <td>World Writable Files</td>
-                    <td>{{WORLD_WRITABLE}}</td>
-                    <td class="{{WORLD_WRITABLE_COLOR}}">
-                        {{WORLD_WRITABLE_STATUS}}
+                    <td>0</td>
+                    <td class="green">
+                        OK
                     </td>
                 </tr>
                 
                 <tr>
                     <td>Password Policy</td>
-                    <td>{{PASSWORD_POLICY}}</td>
-                    <td class="{{PASSWORD_POLICY_COLOR}}">
-                        {{PASSWORD_POLICY}}
+                    <td>UNKNOWN</td>
+                    <td class="yellow">
+                        UNKNOWN
                     </td>
                 </tr>
                 
                 <tr>
                     <td>Inactive Users</td>
-                    <td>{{INACTIVE_USERS}}</td>
+                    <td>129</td>
                     <td class="yellow">REVIEW</td>
                 </tr>
                 
                 <tr>
                     <td>SSH Password Authentication</td>
-                    <td>{{SSH_PASSWORD_AUTH}}</td>
-                    <td class="{{SSH_PASSWORD_COLOR}}">
-                        {{SSH_PASSWORD_AUTH}}
+                    <td>DISABLED</td>
+                    <td class="green">
+                        DISABLED
                     </td>
                 </tr>
                 
                 
                 <tr>
                     <td>Sudo/Admin Users</td>
-                    <td>{{SUDO_USERS}}</td>
+                    <td>root root  </td>
                     <td class="green">INFO</td>
                 </tr>
             </table>
@@ -413,44 +441,44 @@
         
                 <tr>
                     <td>Docker Engine</td>
-                    <td>{{DOCKER_STATUS}}</td>
-                    <td class="{{DOCKER_COLOR}}">{{DOCKER_STATUS}}</td>
+                    <td>INSTALLED BUT NOT RUNNING</td>
+                    <td class="yellow">INSTALLED BUT NOT RUNNING</td>
                 </tr>
         
                 <tr>
                     <td>Running Containers</td>
-                    <td>{{DOCKER_CONTAINERS}}</td>
+                    <td>0</td>
                     <td class="green">INFO</td>
                 </tr>
         
                 <tr>
                     <td>Stopped Containers</td>
-                    <td>{{STOPPED_CONTAINERS}}</td>
+                    <td>0</td>
                     <td class="yellow">REVIEW</td>
                 </tr>
         
                 <tr>
                     <td>Privileged Containers</td>
-                    <td>{{PRIVILEGED_CONTAINERS}}</td>
+                    <td>0</td>
                     <td class="red">CRITICAL</td>
                 </tr>
         
                 <tr>
                     <td>Root Containers</td>
-                    <td>{{ROOT_CONTAINERS}}</td>
+                    <td>0</td>
                     <td class="yellow">HIGH</td>
                 </tr>
         
                 <tr>
                     <td>Published Ports</td>
-                    <td>{{EXPOSED_PORTS}}</td>
+                    <td>0</td>
                     <td class="yellow">EXPOSURE CHECK</td>
                 </tr>
             </table>
         
             <div class="aws-box">
                 <h3>Docker Findings</h3>
-                <p>{{DOCKER_DETAILS}}</p>
+                <p>No Docker findings.</p>
             </div>
         </section>
 
@@ -465,48 +493,48 @@
                 </tr>
                 <tr>
                     <td>AWS CLI</td>
-                    <td>{{AWS_STATUS}}</td>
-                    <td class="{{AWS_COLOR}}">{{AWS_STATUS}}</td>
+                    <td>CONNECTED</td>
+                    <td class="green">CONNECTED</td>
                 </tr>
                 <tr>
                     <td>AWS Account</td>
-                    <td>{{AWS_ACCOUNT}}</td>
+                    <td>806525742801</td>
                     <td class="green">INFO</td>
                 </tr>
                 <tr>
                     <td>Running EC2 Instances</td>
-                    <td>{{EC2_RUNNING}}</td>
+                    <td>0</td>
                     <td class="yellow">COST CHECK</td>
                 </tr>
                 <tr>
                     <td>RDS Instances</td>
-                    <td>{{RDS_RUNNING}}</td>
+                    <td>0</td>
                     <td class="yellow">COST CHECK</td>
                 </tr>
                 <tr>
                     <td>Elastic IPs</td>
-                    <td>{{ELASTIC_IPS}}</td>
+                    <td>0</td>
                     <td class="yellow">COST CHECK</td>
                 </tr>
                 <tr>
                     <td>NAT Gateways</td>
-                    <td>{{NAT_GATEWAYS}}</td>
+                    <td>0</td>
                     <td class="red">HIGH COST RISK</td>
                 </tr>
             </table>
         
             <div class="aws-box">
                 <h3>EC2 Details</h3>
-                <p>{{EC2_DETAILS}}</p>
+                <p>No running EC2 instances detected.</p>
         
                 <h3>RDS Details</h3>
-                <p>{{RDS_DETAILS}}</p>
+                <p>No RDS instances detected.</p>
         
                 <h3>Elastic IP Details</h3>
-                <p>{{ELASTIC_IP_DETAILS}}</p>
+                <p>No Elastic IPs detected.</p>
         
                 <h3>NAT Gateway Details</h3>
-                <p>{{NAT_GATEWAY_DETAILS}}</p>
+                <p>No NAT Gateways detected.</p>
             </div>
         </section>
 
@@ -521,21 +549,21 @@
         
                 <tr>
                     <td>Cluster Status</td>
-                    <td>{{K8S_STATUS}}</td>
+                    <td>NOT INSTALLED</td>
                 </tr>
         
                 <tr>
                     <td>Running Pods</td>
-                    <td>{{RUNNING_PODS}}</td>
+                    <td>0</td>
                 </tr>
         
                 <tr>
                     <td>Privileged Pods</td>
-                    <td>{{PRIVILEGED_PODS}}</td>
+                    <td>0</td>
                 </tr>
                 <tr>
                     <td>Findings</td>
-                    <td>{{K8S_DETAILS}}</td>
+                    <td>No Kubernetes findings.</td>
                 </tr>
         
             </table>
@@ -555,12 +583,12 @@
             
             <tr>
             <td>Packages Requiring Updates</td>
-            <td>{{VULNERABILITY_COUNT}}</td>
+            <td>21</td>
             </tr>
             
             <tr>
             <td>Details</td>
-            <td>{{VULNERABILITY_DETAILS}}</td>
+            <td>awscli<br>docker<br>expat<br>fastapi<br>ffmpeg<br>gh<br>hdrhistogram_c<br>jpeg-turbo<br>libevent<br>libnghttp3<br>libngtcp2<br>libtiff<br>libvmaf<br>node@24<br>openssl@3<br>pillow<br>sdl3<br>sqlite<br>tmux<br>trivy<br>stats</td>
             </tr>
             
             </table>
@@ -578,27 +606,27 @@
         
                 <tr>
                     <td>System Health</td>
-                    <td>{{SYSTEM_RISK}}</td>
+                    <td>0</td>
                 </tr>
         
                 <tr>
                     <td>Linux Security</td>
-                    <td>{{LINUX_RISK}}</td>
+                    <td>5</td>
                 </tr>
         
                 <tr>
                     <td>Docker Security</td>
-                    <td>{{DOCKER_RISK}}</td>
+                    <td>5</td>
                 </tr>
         
                 <tr>
                     <td>AWS Security</td>
-                    <td>{{AWS_RISK}}</td>
+                    <td>0</td>
                 </tr>
         
                 <tr>
                     <td>Kubernetes Security</td>
-                    <td>{{K8S_RISK}}</td>
+                    <td>0</td>
                 </tr>
             </table>
         </section>
@@ -614,42 +642,42 @@
         
                 <tr>
                     <td>Disk Usage</td>
-                    <td>{{DISK_STATUS}}</td>
+                    <td>OK</td>
                 </tr>
         
                 <tr>
                     <td>Memory Usage</td>
-                    <td>{{MEMORY_STATUS}}</td>
+                    <td>OK</td>
                 </tr>
         
                 <tr>
                     <td>Open Ports</td>
-                    <td>{{PORT_STATUS}}</td>
+                    <td>WARNING</td>
                 </tr>
         
                 <tr>
                     <td>Failed Logins</td>
-                    <td>{{FAILED_LOGIN_STATUS}}</td>
+                    <td>OK</td>
                 </tr>
         
                 <tr>
                     <td>Firewall</td>
-                    <td>{{FIREWALL_STATUS}}</td>
+                    <td>ENABLED</td>
                 </tr>
         
                 <tr>
                     <td>Root SSH Login</td>
-                    <td>{{ROOT_LOGIN_STATUS}}</td>
+                    <td>DISABLED</td>
                 </tr>
         
                 <tr>
                     <td>Privileged Containers</td>
-                    <td>{{PRIVILEGED_CONTAINERS}}</td>
+                    <td>0</td>
                 </tr>
         
                 <tr>
                     <td>NAT Gateways</td>
-                    <td>{{NAT_GATEWAYS}}</td>
+                    <td>0</td>
                 </tr>
             </table>
         </section>
@@ -657,7 +685,20 @@
         <section class="card">
             <h2>🛠 Security Remediation Guide</h2>
         
-            {{REMEDIATION_GUIDE}}
+            
+
+<h3>📦 Outdated Packages</h3>
+
+<p><b>Severity:</b> HIGH</p>
+
+<p>Install the latest security patches.</p>
+
+<pre>
+sudo apt update
+sudo apt upgrade
+</pre>
+
+<hr>
         
         </section>
 
