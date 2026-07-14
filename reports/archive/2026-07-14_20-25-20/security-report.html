@@ -49,7 +49,7 @@
         
                         <span>📅 Generated</span>
         
-                        <strong>Tue Jul  7 00:33:21 IST 2026</strong>
+                        <strong>Tue Jul 14 20:25:00 IST 2026</strong>
         
                     </div>
         
@@ -67,7 +67,7 @@
             
             <div class="metric">
             
-            35
+            65
             
             </div>
             
@@ -93,9 +93,9 @@
             
             <h3>Overall Status</h3>
             
-            <div class="yellow">
+            <div class="red">
             
-            MEDIUM RISK
+            HIGH RISK
             
             </div>
             
@@ -117,6 +117,7 @@
             
             </section>
             <nav class="report-nav">
+                <span class="nav-label">Jump to</span>
                 <a href="#executive-summary">Executive Summary</a>
                 <a href="#security-summary">Security</a>
                 <a href="#compliance">Compliance</a>
@@ -149,12 +150,12 @@
             
                         
 <p>
-CloudSec detected a <b>MEDIUM RISK</b> environment.
+CloudSec detected a <b>HIGH RISK</b> environment.
 </p>
 
 <h3>Key Findings</h3>
 <p>
-No critical findings detected.
+• 1 privileged Kubernetes pod(s)<br>
 </p>
 
 <h3>Compliance</h3>
@@ -165,7 +166,7 @@ No critical findings detected.
 
 <h3>Immediate Actions</h3>
 <p>
-No immediate actions required.
+• Remove privileged Kubernetes pods<br>
 </p>
 
             
@@ -186,14 +187,14 @@ No immediate actions required.
             
                         <span>Risk Score</span>
             
-                        <strong>35 / 100</strong>
+                        <strong>65 / 100</strong>
             
                     </div>
             
                     <div class="progress">
             
                         <div class="progress-fill danger-fill"
-                             style="width: 35%;">
+                             style="width: 65%;">
                         </div>
             
                     </div>
@@ -224,9 +225,9 @@ No immediate actions required.
             
                     <h3>Overall Status</h3>
             
-                    <div class="yellow">
+                    <div class="red">
             
-                        MEDIUM RISK
+                        HIGH RISK
             
                     </div>
             
@@ -261,11 +262,11 @@ No immediate actions required.
             
             <tr>
             
-            <td>35</td>
+            <td>125</td>
             
-            <td>35</td>
+            <td>65</td>
             
-            <td>UNCHANGED</td>
+            <td>IMPROVED</td>
             
             </tr>
             
@@ -317,7 +318,7 @@ No immediate actions required.
 <tr><td>Password Policy Configured</td><td>FAIL</td></tr>
 <tr><td>World Writable Files Limited</td><td>PASS</td></tr>
 <tr><td>Privileged Containers</td><td>PASS</td></tr>
-<tr><td>Privileged Pods</td><td>N/A</td></tr>
+<tr><td>Privileged Pods</td><td>FAIL</td></tr>
 
         
             </table>
@@ -333,7 +334,7 @@ No immediate actions required.
                 </tr>
                 <tr>
                     <td>Disk Usage</td>
-                    <td>6%</td>
+                    <td>7%</td>
                     <td class="green">OK</td>
                 </tr>
                 <tr>
@@ -354,8 +355,8 @@ No immediate actions required.
                 </tr>
                 <tr>
                     <td>Open Ports</td>
-                    <td>7</td>
-                    <td class="yellow">WARNING</td>
+                    <td>9</td>
+                    <td class="red">CRITICAL</td>
                 </tr>
             </table>
         </section>
@@ -441,8 +442,8 @@ No immediate actions required.
         
                 <tr>
                     <td>Docker Engine</td>
-                    <td>INSTALLED BUT NOT RUNNING</td>
-                    <td class="yellow">INSTALLED BUT NOT RUNNING</td>
+                    <td>RUNNING</td>
+                    <td class="green">RUNNING</td>
                 </tr>
         
                 <tr>
@@ -453,7 +454,7 @@ No immediate actions required.
         
                 <tr>
                     <td>Stopped Containers</td>
-                    <td>0</td>
+                    <td>14</td>
                     <td class="yellow">REVIEW</td>
                 </tr>
         
@@ -478,7 +479,7 @@ No immediate actions required.
         
             <div class="aws-box">
                 <h3>Docker Findings</h3>
-                <p>No Docker findings.</p>
+                <p>No Docker security findings.</p>
             </div>
         </section>
 
@@ -549,21 +550,21 @@ No immediate actions required.
         
                 <tr>
                     <td>Cluster Status</td>
-                    <td>NOT INSTALLED</td>
+                    <td>CONNECTED</td>
                 </tr>
         
                 <tr>
                     <td>Running Pods</td>
-                    <td>0</td>
+                    <td>9</td>
                 </tr>
         
                 <tr>
                     <td>Privileged Pods</td>
-                    <td>0</td>
+                    <td>1</td>
                 </tr>
                 <tr>
                     <td>Findings</td>
-                    <td>No Kubernetes findings.</td>
+                    <td>CRITICAL: Privileged pods detected.</td>
                 </tr>
         
             </table>
@@ -583,12 +584,12 @@ No immediate actions required.
             
             <tr>
             <td>Packages Requiring Updates</td>
-            <td>21</td>
+            <td>28</td>
             </tr>
             
             <tr>
             <td>Details</td>
-            <td>awscli<br>docker<br>expat<br>fastapi<br>ffmpeg<br>gh<br>hdrhistogram_c<br>jpeg-turbo<br>libevent<br>libnghttp3<br>libngtcp2<br>libtiff<br>libvmaf<br>node@24<br>openssl@3<br>pillow<br>sdl3<br>sqlite<br>tmux<br>trivy<br>stats</td>
+            <td>awscli<br>c-ares<br>cffi<br>docker<br>expat<br>fastapi<br>ffmpeg<br>fontconfig<br>gh<br>go<br>hdrhistogram_c<br>helm<br>jpeg-turbo<br>lame<br>libevent<br>libnghttp3<br>libngtcp2<br>libssh2<br>libtiff<br>libvmaf<br>node@24<br>openssl@3<br>pillow<br>sdl3<br>sqlite<br>tmux<br>trivy<br>stats</td>
             </tr>
             
             </table>
@@ -606,7 +607,7 @@ No immediate actions required.
         
                 <tr>
                     <td>System Health</td>
-                    <td>0</td>
+                    <td>20</td>
                 </tr>
         
                 <tr>
@@ -616,7 +617,7 @@ No immediate actions required.
         
                 <tr>
                     <td>Docker Security</td>
-                    <td>5</td>
+                    <td>0</td>
                 </tr>
         
                 <tr>
@@ -626,7 +627,7 @@ No immediate actions required.
         
                 <tr>
                     <td>Kubernetes Security</td>
-                    <td>0</td>
+                    <td>25</td>
                 </tr>
             </table>
         </section>
@@ -652,7 +653,7 @@ No immediate actions required.
         
                 <tr>
                     <td>Open Ports</td>
-                    <td>WARNING</td>
+                    <td>CRITICAL</td>
                 </tr>
         
                 <tr>
@@ -686,6 +687,17 @@ No immediate actions required.
             <h2>🛠 Security Remediation Guide</h2>
         
             
+           <h3>☸️ Privileged Kubernetes Pods</h3>
+           <p><b>Severity:</b> CRITICAL</p>
+           <p><b>Risk:</b> Containers can escape normal security restrictions.</p>
+           <p><b>Fix:</b></p>
+           <pre>
+kubectl edit deployment <deployment-name>
+
+securityContext:
+  privileged: false
+           </pre>
+           <hr>
 
 <h3>📦 Outdated Packages</h3>
 

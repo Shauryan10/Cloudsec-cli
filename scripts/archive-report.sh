@@ -22,4 +22,11 @@ do
     fi
 done
 
+# Fix the CSS relative path in the archived HTML report so it resolves
+# correctly from reports/archive/<timestamp>/ (two levels deeper than reports/)
+if [ -f "$DEST/security-report.html" ]; then
+    sed -i '' 's|href="../templates/style.css"|href="../../templates/style.css"|g' \
+        "$DEST/security-report.html"
+fi
+
 echo "Reports archived to: $DEST"
