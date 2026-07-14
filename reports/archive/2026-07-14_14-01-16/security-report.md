@@ -6,13 +6,13 @@ Hostname: docker-desktop
 
 User: root
 
-Scan Date: Tue Jul 14 14:36:37 UTC 2026
+Scan Date: Tue Jul 14 14:01:11 UTC 2026
 
 ---
 
 ## Overall Security
 
-Risk Score: 125 / 100
+Risk Score: 135 / 100
 
 Risk Level: HIGH RISK
 
@@ -31,10 +31,10 @@ Disk Usage:
 6%
 
 Memory Usage:
-19%
+25%
 
 Open Ports:
-21
+24
 
 ---
 
@@ -69,16 +69,16 @@ Docker:
 RUNNING
 
 Running Containers:
-1
+4
 
 Privileged Containers:
 1
 
 Root Containers:
-1
+4
 
 Published Ports:
-0
+6
 
 ---
 
@@ -126,7 +126,7 @@ Linux:
 40
 
 Docker:
-40
+50
 
 AWS:
 0

@@ -1,5 +1,5 @@
 {
-    "scan_time": "Tue Jul 14 14:36:37 UTC 2026",
+    "scan_time": "Tue Jul 14 14:03:02 UTC 2026",
     "hostname": "docker-desktop",
     "user": "root",
 
@@ -17,8 +17,8 @@
 
     "system": {
         "disk_usage": "6%",
-        "memory_usage": "19%",
-        "open_ports": "21"
+        "memory_usage": "25%",
+        "open_ports": "23"
     },
 
     "linux": {
@@ -30,7 +30,7 @@
 
     "docker": {
         "status": "RUNNING",
-        "containers": "1",
+        "containers": "3",
         "privileged": "1"
     },
 

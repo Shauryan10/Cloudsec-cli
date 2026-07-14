@@ -6,7 +6,7 @@ Hostname: docker-desktop
 
 User: root
 
-Scan Date: Tue Jul 14 14:36:37 UTC 2026
+Scan Date: Tue Jul 14 14:03:02 UTC 2026
 
 ---
 
@@ -31,10 +31,10 @@ Disk Usage:
 6%
 
 Memory Usage:
-19%
+25%
 
 Open Ports:
-21
+23
 
 ---
 
@@ -69,16 +69,16 @@ Docker:
 RUNNING
 
 Running Containers:
-1
+3
 
 Privileged Containers:
 1
 
 Root Containers:
-1
+3
 
 Published Ports:
-0
+4
 
 ---
 

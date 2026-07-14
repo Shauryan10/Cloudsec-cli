@@ -1,10 +1,10 @@
 {
-    "scan_time": "Tue Jul 14 14:36:37 UTC 2026",
+    "scan_time": "Tue Jul 14 14:01:11 UTC 2026",
     "hostname": "docker-desktop",
     "user": "root",
 
     "risk": {
-        "score": "125",
+        "score": "135",
         "status": "HIGH RISK"
     },
 
@@ -17,8 +17,8 @@
 
     "system": {
         "disk_usage": "6%",
-        "memory_usage": "19%",
-        "open_ports": "21"
+        "memory_usage": "25%",
+        "open_ports": "24"
     },
 
     "linux": {
@@ -30,7 +30,7 @@
 
     "docker": {
         "status": "RUNNING",
-        "containers": "1",
+        "containers": "4",
         "privileged": "1"
     },
 

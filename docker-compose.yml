@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  cloudsec:
+    build: .
+
+    image: shauryan/cloudsec-cli:v1.0
+
+    container_name: cloudsec-cli
+
+    privileged: true
+
+    network_mode: host
+
+    stdin_open: true
+
+    tty: true
+
+    restart: "no"
+
+    volumes:
+
+      # Project
+      - .:/app
+
+      # Reports persist on host
+      - ./reports:/app/reports
+
+      # Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # AWS credentials
+      - ~/.aws:/root/.aws:ro
+
+      # Kubernetes config
+      - ~/.kube:/root/.kube:ro
+
+      # Linux host information
+      - /etc:/host/etc:ro
+      - /var/log:/host/var/log:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+
+    environment:
+      AWS_DEFAULT_REGION: ap-south-1

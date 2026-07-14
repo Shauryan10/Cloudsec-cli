@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+    <title>CloudSec CLI v1.0 Security Report</title>
+    <link rel="stylesheet" href="../templates/style.css">
+</head>
+<body>
+    <div class="container">
+
+        <header>
+
+            <div class="hero">
+        
+                <div class="hero-left">
+        
+                    <h1>🛡 CloudSec CLI</h1>
+        
+                    <p class="subtitle">
+                        Enterprise Security Assessment Report
+                        Version 1.0
+                    </p>
+        
+                </div>
+        
+                <div class="hero-right">
+        
+                    <div class="hero-info">
+        
+                        <span>🖥 Host</span>
+        
+                        <strong>docker-desktop</strong>
+        
+                    </div>
+        
+                    <div class="hero-info">
+        
+                        <span>👤 User</span>
+        
+                        <strong>root</strong>
+        
+                    </div>
+        
+                    <div class="hero-info">
+        
+                        <span>📅 Generated</span>
+        
+                        <strong>Tue Jul 14 14:01:11 UTC 2026</strong>
+        
+                    </div>
+        
+                </div>
+        
+            </div>
+        
+        </header>
+
+        <section class="dashboard">
+
+            <div class="metric-card">
+            
+            <h3>Risk Score</h3>
+            
+            <div class="metric">
+            
+            135
+            
+            </div>
+            
+            <p>/100</p>
+            
+            </div>
+            
+            <div class="metric-card">
+            
+            <h3>Compliance</h3>
+            
+            <div class="metric">
+            
+            14%
+            
+            </div>
+            
+            <p>F</p>
+            
+            </div>
+            
+            <div class="metric-card">
+            
+            <h3>Overall Status</h3>
+            
+            <div class="red">
+            
+            HIGH RISK
+            
+            </div>
+            
+            </div>
+            
+            <div class="metric-card">
+            
+            <h3>Host</h3>
+            
+            <div class="metric-small">
+            
+            docker-desktop
+            
+            </div>
+            
+            <p>root</p>
+            
+            </div>
+            
+            </section>
+            <nav class="report-nav">
+                <a href="#executive-summary">Executive Summary</a>
+                <a href="#security-summary">Security</a>
+                <a href="#compliance">Compliance</a>
+                <a href="#linux">Linux</a>
+                <a href="#docker">Docker</a>
+                <a href="#aws">AWS</a>
+                <a href="#kubernetes">Kubernetes</a>
+                <a href="#system-health">System Health</a>
+                <a href="#security-checks">Security Checks</a>
+                <a href="#vulnerability">Vulnerability</a>
+                <a href="#risk-distribution">Risk Distribution</a>
+                <a href="#risk-breakdown">Risk Breakdown</a>
+                <a href="#remediation">Remediation</a>
+            </nav>
+
+        
+        
+
+            <section id="executive-summary" class="card">
+
+                <h2>📋 Executive Summary</h2>
+            
+                <div class="summary-box">
+            
+                    <div class="summary-icon">
+                        🛡
+                    </div>
+            
+                    <div class="summary-content">
+            
+                        
+<p>
+CloudSec detected a <b>HIGH RISK</b> environment.
+</p>
+
+<h3>Key Findings</h3>
+<p>
+• Firewall disabled<br>• 1 privileged Docker container(s)<br>• 1 privileged Kubernetes pod(s)<br>
+</p>
+
+<h3>Compliance</h3>
+<p>
+1/7 checks passed
+(14%)
+</p>
+
+<h3>Immediate Actions</h3>
+<p>
+• Enable firewall<br>• Remove privileged containers<br>• Remove privileged Kubernetes pods<br>
+</p>
+
+            
+                    </div>
+            
+                </div>
+            
+            </section>
+
+
+            <section id="security-summary" class="card">
+            <h2>📊 Security Summary</h2>
+            <div class="risk-overview">
+
+                <div class="progress-card">
+            
+                    <div class="progress-header">
+            
+                        <span>Risk Score</span>
+            
+                        <strong>135 / 100</strong>
+            
+                    </div>
+            
+                    <div class="progress">
+            
+                        <div class="progress-fill danger-fill"
+                             style="width: 135%;">
+                        </div>
+            
+                    </div>
+            
+                </div>
+            
+                <div class="progress-card">
+            
+                    <div class="progress-header">
+            
+                        <span>Compliance</span>
+            
+                        <strong>14%</strong>
+            
+                    </div>
+            
+                    <div class="progress">
+            
+                        <div class="progress-fill success-fill"
+                             style="width: 14%;">
+                        </div>
+            
+                    </div>
+            
+                </div>
+            
+                <div class="status-card">
+            
+                    <h3>Overall Status</h3>
+            
+                    <div class="red">
+            
+                        HIGH RISK
+            
+                    </div>
+            
+                    <p>
+            
+                        Compliance Grade
+            
+                        <strong>F</strong>
+            
+                    </p>
+            
+                </div>
+            
+            </div>
+        </section>
+
+        <section id="history" class="card">
+
+            <h2>📈 Historical Trend</h2>
+            
+            <table>
+            
+            <tr>
+            
+            <th>Previous Scan</th>
+            
+            <th>Current Scan</th>
+            
+            <th>Trend</th>
+            
+            </tr>
+            
+            <tr>
+            
+            <td>35</td>
+            
+            <td>135</td>
+            
+            <td>WORSENED</td>
+            
+            </tr>
+            
+            </table>
+            
+            </section>
+
+
+            <section id="compliance" class="card">
+            <h2>✅ Compliance Dashboard</h2>
+        
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Checks Passed</td>
+                    <td>1 / 7</td>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Percentage</td>
+                    <td>14%</td>
+                </tr>
+        
+                <tr>
+                    <td>Compliance Grade</td>
+                    <td>F</td>
+                </tr>
+        
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>📜 Compliance Controls</h2>
+        
+            <table>
+                <tr>
+                    <th>Security Control</th>
+                    <th>Result</th>
+                </tr>
+        
+                
+<tr><td>Firewall Enabled</td><td>FAIL</td></tr>
+<tr><td>Root SSH Disabled</td><td>FAIL</td></tr>
+<tr><td>SSH Password Auth Disabled</td><td>FAIL</td></tr>
+<tr><td>Password Policy Configured</td><td>FAIL</td></tr>
+<tr><td>World Writable Files Limited</td><td>PASS</td></tr>
+<tr><td>Privileged Containers</td><td>FAIL</td></tr>
+<tr><td>Privileged Pods</td><td>FAIL</td></tr>
+
+        
+            </table>
+        </section>
+
+        <section id="system-health" class="card">
+            <h2>💻 System Health</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td>6%</td>
+                    <td class="green">OK</td>
+                </tr>
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>25%</td>
+                    <td class="green">OK</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="security-checks" class="card">
+            <h2>🔐 Security Checks</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Open Ports</td>
+                    <td>24</td>
+                    <td class="red">CRITICAL</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="linux" class="card">
+            <h2>🛡️ Linux Security Findings</h2>
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Severity / Status</th>
+                </tr>
+                <tr>
+                    <td>Failed Login Attempts</td>
+                    <td>0</td>
+                    <td class="green">OK</td>
+                </tr>
+                <tr>
+                    <td>Firewall</td>
+                    <td>DISABLED</td>
+                    <td class="red">DISABLED</td>
+                </tr>
+                <tr>
+                    <td>SSH Service</td>
+                    <td>NOT RUNNING</td>
+                    <td class="green">NOT RUNNING</td>
+                </tr>
+                <tr>
+                    <td>Root SSH Login</td>
+                    <td>UNKNOWN</td>
+                    <td class="yellow">UNKNOWN</td>
+                </tr>
+                
+                <tr>
+                    <td>World Writable Files</td>
+                    <td>0</td>
+                    <td class="green">
+                        OK
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>Password Policy</td>
+                    <td>WEAK</td>
+                    <td class="red">
+                        WEAK
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>Inactive Users</td>
+                    <td>18</td>
+                    <td class="yellow">REVIEW</td>
+                </tr>
+                
+                <tr>
+                    <td>SSH Password Authentication</td>
+                    <td>UNKNOWN</td>
+                    <td class="yellow">
+                        UNKNOWN
+                    </td>
+                </tr>
+                
+                
+                <tr>
+                    <td>Sudo/Admin Users</td>
+                    <td>ubuntu </td>
+                    <td class="green">INFO</td>
+                </tr>
+            </table>
+        </section>
+        
+
+        <section id="docker" class="card">
+            <h2>🐳 Docker Security Audit</h2>
+        
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                    <th>Risk</th>
+                </tr>
+        
+                <tr>
+                    <td>Docker Engine</td>
+                    <td>RUNNING</td>
+                    <td class="green">RUNNING</td>
+                </tr>
+        
+                <tr>
+                    <td>Running Containers</td>
+                    <td>4</td>
+                    <td class="green">INFO</td>
+                </tr>
+        
+                <tr>
+                    <td>Stopped Containers</td>
+                    <td>13</td>
+                    <td class="yellow">REVIEW</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Containers</td>
+                    <td>1</td>
+                    <td class="red">CRITICAL</td>
+                </tr>
+        
+                <tr>
+                    <td>Root Containers</td>
+                    <td>4</td>
+                    <td class="yellow">HIGH</td>
+                </tr>
+        
+                <tr>
+                    <td>Published Ports</td>
+                    <td>6</td>
+                    <td class="yellow">EXPOSURE CHECK</td>
+                </tr>
+            </table>
+        
+            <div class="aws-box">
+                <h3>Docker Findings</h3>
+                <p>CRITICAL: Privileged containers detected.<br>HIGH: Containers running as root.<br>WARNING: Large number of exposed ports.<br></p>
+            </div>
+        </section>
+
+        <section id="aws" class="card">
+            <h2>☁️ AWS Up & Running Resources</h2>
+        
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Count / Status</th>
+                    <th>Risk</th>
+                </tr>
+                <tr>
+                    <td>AWS CLI</td>
+                    <td>CONNECTED</td>
+                    <td class="green">CONNECTED</td>
+                </tr>
+                <tr>
+                    <td>AWS Account</td>
+                    <td>806525742801</td>
+                    <td class="green">INFO</td>
+                </tr>
+                <tr>
+                    <td>Running EC2 Instances</td>
+                    <td>0</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+                <tr>
+                    <td>RDS Instances</td>
+                    <td>0</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+                <tr>
+                    <td>Elastic IPs</td>
+                    <td>0</td>
+                    <td class="yellow">COST CHECK</td>
+                </tr>
+                <tr>
+                    <td>NAT Gateways</td>
+                    <td>0</td>
+                    <td class="red">HIGH COST RISK</td>
+                </tr>
+            </table>
+        
+            <div class="aws-box">
+                <h3>EC2 Details</h3>
+                <p>No running EC2 instances detected.</p>
+        
+                <h3>RDS Details</h3>
+                <p>No RDS instances detected.</p>
+        
+                <h3>Elastic IP Details</h3>
+                <p>No Elastic IPs detected.</p>
+        
+                <h3>NAT Gateway Details</h3>
+                <p>No NAT Gateways detected.</p>
+            </div>
+        </section>
+
+        <section id="kubernetes" class="card">
+            <h2>☸️ Kubernetes Security Audit</h2>
+        
+            <table>
+                <tr>
+                    <th>Check</th>
+                    <th>Value</th>
+                </tr>
+        
+                <tr>
+                    <td>Cluster Status</td>
+                    <td>CONNECTED</td>
+                </tr>
+        
+                <tr>
+                    <td>Running Pods</td>
+                    <td>9</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Pods</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Findings</td>
+                    <td>CRITICAL: Privileged pods detected.</td>
+                </tr>
+        
+            </table>
+        </section>
+
+        <section id="vulnerability" class="card">
+
+            <h2>🛡 Vulnerability Scan</h2>
+            
+            <table>
+            
+            <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            
+            </tr>
+            
+            <tr>
+            <td>Packages Requiring Updates</td>
+            <td>0</td>
+            </tr>
+            
+            <tr>
+            <td>Details</td>
+            <td></td>
+            </tr>
+            
+            </table>
+            
+            </section>
+
+            <section id="risk-distribution" class="card">
+            <h2>📊 Risk Distribution</h2>
+        
+            <table>
+                <tr>
+                    <th>Area</th>
+                    <th>Risk Points</th>
+                </tr>
+        
+                <tr>
+                    <td>System Health</td>
+                    <td>20</td>
+                </tr>
+        
+                <tr>
+                    <td>Linux Security</td>
+                    <td>40</td>
+                </tr>
+        
+                <tr>
+                    <td>Docker Security</td>
+                    <td>50</td>
+                </tr>
+        
+                <tr>
+                    <td>AWS Security</td>
+                    <td>0</td>
+                </tr>
+        
+                <tr>
+                    <td>Kubernetes Security</td>
+                    <td>25</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="risk-breakdown" class="card">
+            <h2>📈 Risk Calculation Breakdown</h2>
+        
+            <table>
+                <tr>
+                    <th>Security Check</th>
+                    <th>Status</th>
+                </tr>
+        
+                <tr>
+                    <td>Disk Usage</td>
+                    <td>OK</td>
+                </tr>
+        
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>OK</td>
+                </tr>
+        
+                <tr>
+                    <td>Open Ports</td>
+                    <td>CRITICAL</td>
+                </tr>
+        
+                <tr>
+                    <td>Failed Logins</td>
+                    <td>OK</td>
+                </tr>
+        
+                <tr>
+                    <td>Firewall</td>
+                    <td>DISABLED</td>
+                </tr>
+        
+                <tr>
+                    <td>Root SSH Login</td>
+                    <td>UNKNOWN</td>
+                </tr>
+        
+                <tr>
+                    <td>Privileged Containers</td>
+                    <td>1</td>
+                </tr>
+        
+                <tr>
+                    <td>NAT Gateways</td>
+                    <td>0</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>🛠 Security Remediation Guide</h2>
+        
+            
+        <h3>🚨 Firewall Disabled</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Incoming connections are not filtered.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+sudo ufw enable
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+sudo ufw status
+        </pre>
+        <hr>
+           <h3>☸️ Privileged Kubernetes Pods</h3>
+           <p><b>Severity:</b> CRITICAL</p>
+           <p><b>Risk:</b> Containers can escape normal security restrictions.</p>
+           <p><b>Fix:</b></p>
+           <pre>
+kubectl edit deployment <deployment-name>
+
+securityContext:
+  privileged: false
+           </pre>
+           <hr>
+        <h3>⚠ Weak Password Policy</h3>
+        <p><b>Severity:</b> HIGH</p>
+        <p><b>Risk:</b> Passwords may never expire.</p>
+        <p><b>Fix:</b></p>
+        <pre>
+        sudo nano /etc/login.defs
+
+        PASS_MAX_DAYS 90
+        PASS_MIN_DAYS 1
+        PASS_WARN_AGE 7
+        </pre>
+        <p><b>Verify:</b></p>
+        <pre>
+        grep PASS_MAX_DAYS /etc/login.defs
+        </pre>
+        <hr>
+        
+        </section>
+
+        
+        <footer>
+
+            <p>
+            Generated by <strong>CloudSec CLI v1.0</strong>
+            </p>
+            
+            <p>
+            Enterprise Security Assessment Report
+            </p>
+            
+            <p>
+            © 2026 CloudSec CLI
+            </p>
+            
+            </footer>
+        
+
+    </div>
+</body>
+</html>
+
