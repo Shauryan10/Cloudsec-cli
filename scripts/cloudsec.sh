@@ -1,6 +1,7 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source scripts/cli.sh "$@"
-source scripts/banner.sh
+bash "$SCRIPT_DIR/banner.sh"
 
 if [[ "$1" == "--help" ]]; then
     cat docs/help.txt
@@ -13,7 +14,7 @@ if [[ "$1" == "--version" ]]; then
 fi
 
 REPORT_DIR="reports"
-source scripts/logger.sh
+source "$SCRIPT_DIR/logger.sh"
 source scripts/cli.sh
 HISTORY_DIR="history"
 LOG_DIR="logs"
@@ -1502,7 +1503,7 @@ fi
 echo -e "${GREEN}${BOLD}JSON report generated:${RESET} $JSON_REPORT"
 echo "$(date '+%F %T') | JSON report generated | $JSON_REPORT" >> "$AUDIT_LOG"
 log "INFO" "JSON report generated"
-bash scripts/archive-report.sh
+bash "$SCRIPT_DIR/archive-report.sh"
 bash scripts/compare-scan.sh
 bash scripts/statistics.sh
 echo ""
