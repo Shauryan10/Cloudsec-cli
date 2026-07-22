@@ -4,7 +4,7 @@ services:
   cloudsec:
     build: .
 
-    image: shauryan/cloudsec-cli:v1.0
+    image: dexter690990/cloudsec-cli:v1.0
 
     container_name: cloudsec-cli
 
@@ -19,23 +19,19 @@ services:
     restart: "no"
 
     volumes:
-
-      # Project
       - .:/app
-
-      # Reports persist on host
       - ./reports:/app/reports
 
       # Docker daemon
       - /var/run/docker.sock:/var/run/docker.sock
 
-      # AWS credentials
+      # AWS Credentials
       - ~/.aws:/root/.aws:ro
 
-      # Kubernetes config
+      # Kubernetes
       - ~/.kube:/root/.kube:ro
 
-      # Linux host information
+      # Linux host inspection
       - /etc:/host/etc:ro
       - /var/log:/host/var/log:ro
       - /proc:/host/proc:ro

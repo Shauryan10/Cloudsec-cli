@@ -1,29 +1,43 @@
-FROM ubuntu:24.04
+FROM python:3.12-slim
 
+# Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /app
 
+# Install Linux utilities required by CloudSec
 RUN apt-get update && apt-get install -y \
     bash \
     curl \
     wget \
-    git \
     jq \
-    unzip \
-    awscli \
-    docker.io \
     procps \
     iproute2 \
     net-tools \
     iputils-ping \
-    dnsutils \
-    openssh-client \
-    kubectl \
+    docker.io \
+    ca-certificates \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /app
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    boto3 \
+    awscli \
+    jinja2
 
-RUN chmod +x scripts/*.sh
-RUN chmod +x installer/*.sh
+# Copy complete project
+COPY . .
 
-ENTRYPOINT ["bash","/app/scripts/cloudsec.sh"]
+# Make every shell script executable
+RUN chmod +x scripts/cloudsec.sh && \
+    find scripts -name "*.sh" -exec chmod +x {} \;
+
+# Create reports directory
+RUN mkdir -p reports
+
+# Default AWS region
+ENV AWS_DEFAULT_REGION=ap-south-1
+
+# Entry point
+ENTRYPOINT ["./scripts/cloudsec.sh"]

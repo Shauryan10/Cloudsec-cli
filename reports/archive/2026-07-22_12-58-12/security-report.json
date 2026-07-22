@@ -1,5 +1,5 @@
 {
-    "scan_time": "Wed Jul 22 13:03:54 UTC 2026",
+    "scan_time": "Wed Jul 22 12:58:08 UTC 2026",
     "hostname": "docker-desktop",
     "user": "root",
 
@@ -17,7 +17,7 @@
 
     "system": {
         "disk_usage": "7%",
-        "memory_usage": "19%",
+        "memory_usage": "18%",
         "open_ports": "22"
     },
 
