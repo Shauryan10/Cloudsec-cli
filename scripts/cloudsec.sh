@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$BASE_DIR"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source scripts/cli.sh "$@"
 bash "$SCRIPT_DIR/banner.sh"
@@ -13,11 +14,12 @@ if [[ "$1" == "--version" ]]; then
     exit 0
 fi
 
-REPORT_DIR="reports"
+BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+REPORT_DIR="$BASE_DIR/reports"
 source "$SCRIPT_DIR/logger.sh"
 source scripts/cli.sh
-HISTORY_DIR="history"
-LOG_DIR="logs"
+HISTORY_DIR="$BASE_DIR/history"
+LOG_DIR="$BASE_DIR/logs"
 mkdir -p "$LOG_DIR"
 AUDIT_LOG="$LOG_DIR/cloudsec.log"
 mkdir -p "$HISTORY_DIR"
@@ -1506,6 +1508,7 @@ log "INFO" "JSON report generated"
 bash "$SCRIPT_DIR/archive-report.sh"
 bash scripts/compare-scan.sh
 bash scripts/statistics.sh
+bash "$SCRIPT_DIR/s3_upload.sh"
 echo ""
 
 
